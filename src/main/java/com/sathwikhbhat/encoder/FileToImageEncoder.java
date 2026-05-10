@@ -16,6 +16,10 @@ public class FileToImageEncoder {
         byte[] data = Files.readAllBytes(inputFile);
         System.out.println("File read successfully. Size: " + data.length + " bytes");
 
+        if (data.length == 0) {
+            throw new IllegalArgumentException("File is empty");
+        }
+
         Dimension dimension = ImageDimensionUtil.calculateDimensions(data.length);
         System.out.println("Calculated image dimensions: " + dimension.width + "x" + dimension.height);
 
@@ -34,7 +38,7 @@ public class FileToImageEncoder {
             }
         }
 
-        Path outputFile = Path.of("encoded.png");
+        Path outputFile = Path.of("data/encoded/encoded.png");
         ImageIO.write(image, "png", outputFile.toFile());
 
         System.out.println("Image saved successfully to " + outputFile.toAbsolutePath());

@@ -8,7 +8,7 @@ import java.nio.file.Paths;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        Path inputFile = Paths.get("sample.txt");
+        Path inputFile = Paths.get("data/input/sample.txt");
         new FileToImageEncoder().encode(inputFile);
     }
 }
