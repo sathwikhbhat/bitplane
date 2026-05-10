@@ -14,8 +14,10 @@ public class ImageToFileDecoder {
     public void decode(Path imagePath) throws IOException {
         BufferedImage image = ImageIO.read(imagePath.toFile());
         Raster raster = image.getRaster();
+        System.out.println("Image read successfully");
 
         Dimension dimension = new Dimension(image.getWidth(), image.getHeight());
+        System.out.println("Image dimensions: " + dimension.width + "x" + dimension.height);
 
         byte[] extracted = new byte[dimension.height * dimension.width];
 
@@ -27,6 +29,8 @@ public class ImageToFileDecoder {
             }
         }
 
-        Files.write(Path.of(DECODED_FILE_PATH), extracted);
+        Path outputFile = Path.of(DECODED_FILE_PATH);
+        Files.write(outputFile, extracted);
+        System.out.println("File saved successfully to " + outputFile.toAbsolutePath());
     }
 }

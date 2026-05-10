@@ -15,6 +15,8 @@ public class Main {
         Path inputFile = Paths.get(INPUT_FILE_NAME);
         new FileToImageEncoder().encode(inputFile);
 
+        System.out.println();
+
         Path encodedFile = Paths.get(ENCODED_IMAGE_PATH);
         new ImageToFileDecoder().decode(encodedFile);
     }
