@@ -25,8 +25,14 @@ public class FileToImageEncoder {
                 BufferedImage.TYPE_BYTE_GRAY
         );
         WritableRaster raster = image.getRaster();
-        int value = data[0] & 0xFF;
-        raster.setSample(0, 0, 0, value);
+
+        int index = 0;
+        for (int y = 0; y < dimension.height && index < data.length; y++) {
+            for (int x = 0; x < dimension.width && index < data.length; x++, index++) {
+                int value = data[index] & 0xFF;
+                raster.setSample(x, y, 0, value);
+            }
+        }
 
         Path outputFile = Path.of("encoded.png");
         ImageIO.write(image, "png", outputFile.toFile());
