@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static com.sathwikhbhat.constants.ImageConstants.ENCODED_IMAGE_PATH;
+
 
 public class FileToImageEncoder {
     public void encode(Path inputFile) throws IOException {
@@ -38,7 +40,7 @@ public class FileToImageEncoder {
             }
         }
 
-        Path outputFile = Path.of("data/encoded/encoded.png");
+        Path outputFile = Path.of(ENCODED_IMAGE_PATH);
         ImageIO.write(image, "png", outputFile.toFile());
 
         System.out.println("Image saved successfully to " + outputFile.toAbsolutePath());
