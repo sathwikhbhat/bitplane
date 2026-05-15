@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Header {
     private long metadataLength;
-    private long payloadLength;
+    private long fileDataLength;
 }
