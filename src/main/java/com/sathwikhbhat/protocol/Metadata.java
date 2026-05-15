@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Metadata {
     private String fileName;
+    private long fileSize;
 }

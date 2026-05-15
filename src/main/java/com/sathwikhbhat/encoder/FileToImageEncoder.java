@@ -30,6 +30,7 @@ public class FileToImageEncoder {
 
         Metadata metadata = Metadata.builder()
                 .fileName(inputFile.getFileName().toString())
+                .fileSize(fileBytes.length)
                 .build();
 
         System.out.println("Metadata created: " + metadata);
