@@ -36,6 +36,9 @@ build/
 ### VS Code ###
 .vscode/
 
+### Project data ###
+/data/
+
 ### OS ###
 .DS_Store
 Thumbs.db
