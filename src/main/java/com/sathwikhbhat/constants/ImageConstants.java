@@ -13,5 +13,4 @@ public final class ImageConstants {
 
     public static final String INPUT_FILE_NAME = "data/input/sample.txt";
     public static final String ENCODED_IMAGE_PATH = "data/encoded/encoded.png";
-    public static final String DECODED_FILE_PATH = "data/decoded/decoded.txt";
 }
