@@ -1,5 +1,7 @@
 package com.sathwikhbhat.encoder;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sathwikhbhat.protocol.Metadata;
 import com.sathwikhbhat.util.ImageDimensionUtil;
 
 import javax.imageio.ImageIO;
@@ -7,6 +9,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -15,14 +18,25 @@ import static com.sathwikhbhat.constants.ImageConstants.ENCODED_IMAGE_PATH;
 
 public class FileToImageEncoder {
     public void encode(Path inputFile) throws IOException {
-        byte[] data = Files.readAllBytes(inputFile);
-        System.out.println("File read successfully. Size: " + data.length + " bytes");
+        byte[] fileBytes = Files.readAllBytes(inputFile);
+        System.out.println("File read successfully. Size: " + fileBytes.length + " bytes");
 
-        if (data.length == 0) {
+        if (fileBytes.length == 0) {
             throw new IllegalArgumentException("File is empty");
         }
 
-        Dimension dimension = ImageDimensionUtil.calculateDimensions(data.length);
+        Metadata metadata = Metadata.builder()
+                .fileName(inputFile.getFileName().toString())
+                .build();
+
+        System.out.println("Metadata created: " + metadata);
+
+        ObjectMapper mapper = new ObjectMapper();
+        String metadataJson = mapper.writeValueAsString(metadata);
+
+        byte[] metadataBytes = metadataJson.getBytes(StandardCharsets.UTF_8);
+
+        Dimension dimension = ImageDimensionUtil.calculateDimensions(fileBytes.length);
         System.out.println("Calculated image dimensions: " + dimension.width + "x" + dimension.height);
 
         BufferedImage image = new BufferedImage(
@@ -33,9 +47,9 @@ public class FileToImageEncoder {
         WritableRaster raster = image.getRaster();
 
         int index = 0;
-        for (int y = 0; y < dimension.height && index < data.length; y++) {
-            for (int x = 0; x < dimension.width && index < data.length; x++, index++) {
-                int value = data[index] & 0xFF;
+        for (int y = 0; y < dimension.height && index < fileBytes.length; y++) {
+            for (int x = 0; x < dimension.width && index < fileBytes.length; x++, index++) {
+                int value = fileBytes[index] & 0xFF;
                 raster.setSample(x, y, 0, value);
             }
         }
