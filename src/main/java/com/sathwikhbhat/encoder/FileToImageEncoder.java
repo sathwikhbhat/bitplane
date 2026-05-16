@@ -28,10 +28,7 @@ public class FileToImageEncoder {
             throw new IllegalArgumentException("File is empty");
         }
 
-        Metadata metadata = Metadata.builder()
-                .fileName(inputFile.getFileName().toString())
-                .fileSize(fileBytes.length)
-                .build();
+        Metadata metadata = new Metadata(inputFile.getFileName().toString(), fileBytes.length);
 
         System.out.println("Metadata created: " + metadata);
 

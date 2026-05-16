@@ -46,7 +46,7 @@ public class ImageToFileDecoder {
         byte[] dataBytes = new byte[(int) dataLength];
         buffer.get(dataBytes);
 
-        Path outputFile = Path.of("data/decoded/" + metadata.getFileName());
+        Path outputFile = Path.of("data/decoded/" + metadata.fileName());
         Files.write(outputFile, dataBytes);
         System.out.println("File saved successfully to " + outputFile.toAbsolutePath());
     }

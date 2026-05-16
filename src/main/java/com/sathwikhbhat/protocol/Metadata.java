@@ -1,15 +1,4 @@
 package com.sathwikhbhat.protocol;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class Metadata {
-    private String fileName;
-    private long fileSize;
+public record Metadata(String fileName, long fileSize) {
 }
