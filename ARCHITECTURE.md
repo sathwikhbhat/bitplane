@@ -2,7 +2,7 @@
 
 ## Core Idea
 
-The system converts a file into multiple fixed-size image frames.
+The system converts a file into multiple fixed-size grayscale image frames.
 
 Each frame is:
 
@@ -22,9 +22,23 @@ because:
 1 pixel = 1 byte
 ```
 
-# Pipeline
+## Pipeline
 
-We now separate:
+```text
+File
+↓
+Metadata + Payload Separation
+↓
+Frame Serialization
+↓
+Image Encoding
+↓
+Video Generation
+```
+
+## Architectural Principle
+
+The system separates:
 
 ```text
 metadata transport
@@ -36,15 +50,16 @@ from:
 payload transport
 ```
 
-This removed:
+This removes:
 
 * recursive sizing problems
 * dynamic payload calculations
 * unstable frame layouts
+* packet dependency loops
 
-# Frame Types
+## Frame Types
 
-## Frame 0
+### Frame 0
 
 Metadata Frame
 
@@ -53,52 +68,58 @@ Dedicated entirely to protocol metadata.
 Contains:
 
 * file name
-* total payload/file size
-* total number of frames
+* total file size
+* total payload frame count
 
 No payload data is stored here.
 
-## Frame 1+
+### Frame 1+
 
 Payload Frames
 
-Contain only:
+Contain:
 
 * frame index
 * payload bytes
 
 These are fixed-layout transport frames.
 
-# Global Header
+## Metadata Header
 
 ```java
-public record GlobalHeader(
+public record MetadataHeader(
         String fileName,
         long fileSize,
-        long totalFrames
+        int totalPayloadFrames
 ) {
 }
 ```
 
-Stored ONLY in Frame 0.
+Purpose:
 
-# Frame Header
+* reconstruction metadata
+* payload reconstruction termination
+* future protocol extensibility
+
+Stored only in Frame 0.
+
+## Payload Header
 
 ```java
-public record FrameHeader(
+public record PayloadHeader(
         int frameIndex
 ) {
 }
 ```
 
-Stored in every payload frame.
-
 Purpose:
 
-* reconstruction ordering
+* payload ordering
 * future multithreaded decoding support
 
-# Metadata Frame Layout (Frame 0)
+Stored in every payload frame.
+
+## Metadata Frame Layout (Frame 0)
 
 ```text
 [4 bytes metadataLength]
@@ -106,26 +127,52 @@ Purpose:
 [unused padding]
 ```
 
-## Notes
+### Notes
 
 * `metadataBytes` are serialized using Jackson.
 * Remaining unused bytes in Frame 0 are ignored.
 * Entire metadata must fit within one frame.
+* If metadata exceeds frame capacity:
 
-# Payload Frame Layout (Frame 1+)
+    * throw encoding exception
+
+## Payload Frame Layout (Frame 1+)
 
 ```text
 [4 bytes frameIndex]
 [payloadBytes]
 ```
 
-## Notes
+### Notes
 
 * `frameIndex` is fixed-width.
+* `frameIndex` uses 4 bytes (`int`).
 * Remaining frame space is pure payload capacity.
 * No payload size is stored per frame.
 
-# Why Payload Size Was Removed
+## Payload Capacity
+
+### Total Frame Capacity
+
+```text
+1920 × 1080
+=
+2,073,600 bytes
+```
+
+### Payload Frame Capacity
+
+```text
+2,073,600 - 4
+=
+2,073,596 bytes
+```
+
+because:
+
+* first 4 bytes store frame index
+
+## Why Payload Size Was Removed
 
 Earlier architecture stored:
 
@@ -133,31 +180,43 @@ Earlier architecture stored:
 payloadSize
 ```
 
-inside each frame header.
+inside each payload frame.
 
 This created recursive dependency problems because:
 
-* payload size depended on frame header size
-* frame header size depended on serialized metadata
+* payload size depended on header size
+* header size depended on serialized metadata
+* frame count calculations became unstable
 
-The new design removes this completely.
+The new architecture removes this completely.
 
-# Reconstruction Logic
+## Reconstruction Logic
 
-Decoder:
+### Step 1
 
-* reads metadata from Frame 0
-* gets:
+Decode Frame 0.
 
-    * file name
-    * total file size
-    * total frames
+Extract:
 
-Then:
+* file name
+* file size
+* total payload frames
 
-* decodes payload frames
-* arranges them using `frameIndex`
-* keeps reconstructing bytes until:
+### Step 2
+
+Decode payload frames.
+
+Use:
+
+```text
+frameIndex
+```
+
+to arrange payload frames correctly.
+
+### Step 3
+
+Reconstruct bytes until:
 
 ```text
 reconstructedBytes == fileSize
@@ -168,37 +227,40 @@ This removes the need for:
 * per-frame payload size
 * special handling for last frame
 
-# Serializer Structure
+## Serializer Structure
 
-## MetadataFrameSerializer
+### MetadataSerializer
 
 Used only for Frame 0.
 
 Responsibility:
 
 ```text
-GlobalHeader → byte[]
+MetadataHeader → byte[]
 ```
 
 Uses:
 
 * Jackson serialization
 
-## PayloadFrameSerializer
+### PayloadSerializer
 
 Used for Frame 1+.
 
 Responsibility:
 
 ```text
-frameIndex + payload → byte[]
+PayloadHeader + payload → byte[]
 ```
 
-Likely binary/manual serialization.
+Uses:
 
-No JSON needed.
+* manual binary serialization
+* direct byte array manipulation
 
-# Important Protocol Constraint
+No JSON is used for payload frames.
+
+## Important Protocol Constraint
 
 Metadata must fit inside one frame.
 
@@ -208,4 +270,4 @@ If serialized metadata exceeds metadata frame capacity:
 throw encoding exception
 ```
 
-This is intentional protocol simplification.
+This is an intentional protocol simplification.
