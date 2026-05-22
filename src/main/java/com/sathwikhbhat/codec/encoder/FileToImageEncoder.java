@@ -1,4 +1,4 @@
-package com.sathwikhbhat.encoder;
+package com.sathwikhbhat.codec.encoder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sathwikhbhat.protocol.Metadata;

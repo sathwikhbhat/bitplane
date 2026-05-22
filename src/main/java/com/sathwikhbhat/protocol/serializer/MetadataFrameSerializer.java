@@ -1,10 +1,11 @@
-package com.sathwikhbhat.protocol;
+package com.sathwikhbhat.protocol.serializer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sathwikhbhat.protocol.header.MetadataHeader;
 import com.sathwikhbhat.util.ByteUtil;
 
-public class MetadataSerializer {
+public class MetadataFrameSerializer {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
