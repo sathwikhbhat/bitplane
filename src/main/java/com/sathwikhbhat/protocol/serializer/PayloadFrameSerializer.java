@@ -1,12 +1,14 @@
 package com.sathwikhbhat.protocol.serializer;
 
-import com.sathwikhbhat.protocol.header.PayloadHeader;
+import com.sathwikhbhat.protocol.frame.PayloadFrame;
 import com.sathwikhbhat.util.ByteUtil;
 
 public class PayloadFrameSerializer {
 
-    public byte[] serialize(PayloadHeader payloadHeader, byte[] payload) {
-        byte[] frameIndexBytes = ByteUtil.intToBytes(payloadHeader.frameIndex());
+    public byte[] serialize(PayloadFrame payloadFrame) {
+        byte[] frameIndexBytes = ByteUtil.intToBytes(payloadFrame.frameIndex());
+        byte[] payload = payloadFrame.payload();
+
         int totalPayloadFrameSize = frameIndexBytes.length + payload.length;
 
         byte[] serializedPayloadFrame = new byte[totalPayloadFrameSize];
