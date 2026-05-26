@@ -1,9 +1,9 @@
-package com.sathwikhbhat.protocol.serializer;
+package com.sathwikhbhat.protocol.codec;
 
 import com.sathwikhbhat.protocol.frame.PayloadFrame;
 import com.sathwikhbhat.util.ByteUtil;
 
-public class PayloadFrameSerializer {
+public class PayloadFrameCodec {
 
     public byte[] serialize(PayloadFrame payloadFrame) {
         byte[] frameIndexBytes = ByteUtil.intToBytes(payloadFrame.frameIndex());
