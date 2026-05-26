@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sathwikhbhat.protocol.frame.MetadataFrame;
 import com.sathwikhbhat.util.ByteUtil;
 
+import java.io.IOException;
+import java.nio.ByteBuffer;
+
 public class MetadataFrameCodec {
 
     private static final ObjectMapper mapper = new ObjectMapper();
@@ -23,5 +26,19 @@ public class MetadataFrameCodec {
         System.arraycopy(metadataBytes, 0, serializedMetadataFrame, offset, metadataBytes.length);
 
         return serializedMetadataFrame;
+    }
+
+    public MetadataFrame deserialize(byte[] serializedMetadataFrame) throws IOException {
+        ByteBuffer buffer = ByteBuffer.wrap(serializedMetadataFrame);
+        int metadataLength = buffer.getInt();
+
+        if (metadataLength < 0 || metadataLength > buffer.remaining()) {
+            throw new IllegalArgumentException("Invalid metadata length");
+        }
+
+        byte[] metadataBytes = new byte[metadataLength];
+        buffer.get(metadataBytes);
+
+        return mapper.readValue(metadataBytes, MetadataFrame.class);
     }
 }
