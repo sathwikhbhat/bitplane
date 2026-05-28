@@ -1,4 +1,4 @@
-package com.sathwikhbhat.raster;
+package com.sathwikhbhat.image.raster;
 
 import com.sathwikhbhat.constants.ImageConstants;
 
