@@ -10,6 +10,8 @@ public final class ImageConstants {
 
     public static final int FRAME_BYTE_CAPACITY = WIDTH * HEIGHT;
 
+    public static final String FORMAT = "png";
+
     public static final String INPUT_FILE_NAME = "data/input/sample.txt";
     public static final String ENCODED_IMAGE_PATH = "data/encoded/encoded.png";
 }
