@@ -11,10 +11,11 @@ public class PayloadFrameBuilder {
 
     public List<PayloadFrame> build(byte[] payload) {
         int maxPayloadSize = ImageConstants.FRAME_BYTE_CAPACITY - Integer.BYTES;
-        int totalFrames = (payload.length + maxPayloadSize - 1)/ maxPayloadSize;
+        int totalFrames = (payload.length + maxPayloadSize - 1) / maxPayloadSize;
 
         List<PayloadFrame> payloadFrames = new ArrayList<>();
-        for(int frameIndex = 0; frameIndex < totalFrames; frameIndex++) {
+
+        for (int frameIndex = 0; frameIndex < totalFrames; frameIndex++) {
             int start = frameIndex * maxPayloadSize;
             int end = Math.min(start + maxPayloadSize, payload.length);
 
