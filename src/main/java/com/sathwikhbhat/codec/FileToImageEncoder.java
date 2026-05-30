@@ -1,5 +1,6 @@
 package com.sathwikhbhat.codec;
 
+import com.sathwikhbhat.constants.ImageConstants;
 import com.sathwikhbhat.image.generator.ImageGenerator;
 import com.sathwikhbhat.image.io.ImageIOCodec;
 import com.sathwikhbhat.protocol.builder.PayloadFrameBuilder;
@@ -17,6 +18,7 @@ public class FileToImageEncoder {
 
     private final PayloadFrameBuilder payloadFrameBuilder = new PayloadFrameBuilder();
     private final ImageGenerator imageGenerator = new ImageGenerator();
+    private final ImageIOCodec imageIOCodec = new ImageIOCodec();
 
     public void encode(Path inputFile) throws IOException {
         byte[] fileBytes = Files.readAllBytes(inputFile);
@@ -48,6 +50,14 @@ public class FileToImageEncoder {
         System.out.println("Rasterization completed");
         System.out.println("Total Payload Frames = " + payloadFrameImages.size());
 
-        // Use ImageIOCodec.java to save BufferedImages
+        imageIOCodec.write(metadataFrameImage,
+                Path.of(ImageConstants.ENCODED_IMAGE_PATH
+                        .replace(".png", "_metadata.png")));
+
+        for (int i = 0; i < payloadFrameImages.size(); i++) {
+            imageIOCodec.write(payloadFrameImages.get(i),
+                    Path.of(ImageConstants.ENCODED_IMAGE_PATH
+                            .replace(".png", "_payload_" + i + ".png")));
+        }
     }
 }
