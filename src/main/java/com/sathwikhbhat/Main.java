@@ -1,7 +1,7 @@
 package com.sathwikhbhat;
 
-import com.sathwikhbhat.codec.decoder.ImageToFileDecoder;
-import com.sathwikhbhat.codec.encoder.FileToImageEncoder;
+import com.sathwikhbhat.codec.ImageToFileDecoder;
+import com.sathwikhbhat.codec.FileToImageEncoder;
 
 import java.io.IOException;
 import java.nio.file.Path;
