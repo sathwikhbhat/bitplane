@@ -1,6 +1,7 @@
 package com.sathwikhbhat.bitplane.controller;
 
 import com.sathwikhbhat.bitplane.service.CodecService;
+import io.github.sathwikhbhat.apiexecutiontracker.annotation.TrackExecutionTime;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -18,6 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.InvalidPathException;
 
+@TrackExecutionTime
 @RestController
 @RequestMapping("/api/v1/codec")
 public class CodecController {
