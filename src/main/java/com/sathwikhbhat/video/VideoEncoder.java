@@ -12,6 +12,7 @@ import java.util.List;
 
 public class VideoEncoder {
 
+    private final FFmpegExecutor ffmpegExecutor = new FFmpegExecutor();
     private final ImageIOCodec imageIOCodec = new ImageIOCodec();
 
     public Path encode(ImageFrameSet imageFrameSet) throws IOException {
@@ -43,16 +44,7 @@ public class VideoEncoder {
                 "-pix_fmt", "yuv444p",
                 ImageConstants.OUTPUT_VIDEO.toString());
 
-        Process process = processBuilder.start();
-
-        try {
-            int exitCode = process.waitFor();
-            if (exitCode != 0)
-                throw new RuntimeException("FFmpeg encoding failed");
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
-        }
+        ffmpegExecutor.execute(processBuilder);
 
         return ImageConstants.OUTPUT_VIDEO;
     }
