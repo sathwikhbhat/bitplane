@@ -21,12 +21,13 @@ public class VideoDecoder {
 
         ProcessBuilder processBuilder = new ProcessBuilder(
                 "ffmpeg",
+                "-y",
+                "-nostdin",
                 "-i",
                 videoPath.toString(),
                 ImageConstants.EXTRACTED_FRAME_DIRECTORY
                         .resolve("frame_%06d.png")
-                        .toString()
-        );
+                        .toString());
 
         fFmpegExecutor.execute(processBuilder);
 
@@ -49,8 +50,7 @@ public class VideoDecoder {
 
         return new ImageFrameSet(
                 metadataImage,
-                payloadImages
-        );
+                payloadImages);
     }
 
 }

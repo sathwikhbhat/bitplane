@@ -24,20 +24,20 @@ public class VideoEncoder {
         // Frame 0 = Metadata
         imageIOCodec.write(
                 metadataFrameImage,
-                ImageConstants.FRAME_DIRECTORY.resolve("frame_000000.png")
-        );
+                ImageConstants.FRAME_DIRECTORY.resolve("frame_000000.png"));
 
         // Frame 1+ = Payload Frames
         for (int i = 0; i < payloadFrameImages.size(); i++) {
             imageIOCodec.write(
                     payloadFrameImages.get(i),
                     ImageConstants.FRAME_DIRECTORY.resolve(
-                            String.format("frame_%06d.png", i + 1))
-            );
+                            String.format("frame_%06d.png", i + 1)));
         }
 
         ProcessBuilder processBuilder = new ProcessBuilder(
                 "ffmpeg",
+                "-y",
+                "-nostdin",
                 "-framerate", "30",
                 "-i", ImageConstants.FRAME_DIRECTORY.resolve("frame_%06d.png").toString(),
                 "-c:v", "libx264",
@@ -45,6 +45,9 @@ public class VideoEncoder {
                 ImageConstants.OUTPUT_VIDEO.toString());
 
         ffmpegExecutor.execute(processBuilder);
+
+        System.out.println("Video encoding completed successfully. Video saved at: "
+                + ImageConstants.OUTPUT_VIDEO.toAbsolutePath());
 
         return ImageConstants.OUTPUT_VIDEO;
     }
