@@ -22,9 +22,9 @@ public class ImageToFileDecoder {
     private final MetadataFrameCodec metadataFrameCodec = new MetadataFrameCodec();
     private final PayloadFrameCodec payloadFrameCodec = new PayloadFrameCodec();
 
-    public void decode(EncodedData encodedData) throws IOException {
-        BufferedImage metadataFrameImage = encodedData.metadataImage();
-        List<BufferedImage> payloadFrameImages = encodedData.payloadImages();
+    public void decode(ImageFrameSet imageFrameSet) throws IOException {
+        BufferedImage metadataFrameImage = imageFrameSet.metadataImage();
+        List<BufferedImage> payloadFrameImages = imageFrameSet.payloadImages();
 
         System.out.println("\nBuffered Images read successfully");
 

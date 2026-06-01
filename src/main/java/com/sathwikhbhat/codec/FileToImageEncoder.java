@@ -20,7 +20,7 @@ public class FileToImageEncoder {
     private final ImageGenerator imageGenerator = new ImageGenerator();
     private final ImageIOCodec imageIOCodec = new ImageIOCodec();
 
-    public EncodedData encode(Path inputFile) throws IOException {
+    public ImageFrameSet encode(Path inputFile) throws IOException {
         byte[] fileBytes = Files.readAllBytes(inputFile);
 
         System.out.println("File read successfully. Size: " + fileBytes.length + " bytes");
@@ -50,16 +50,6 @@ public class FileToImageEncoder {
         System.out.println("Rasterization completed");
         System.out.println("Total Payload Frames = " + payloadFrameImages.size());
 
-        imageIOCodec.write(metadataFrameImage,
-                Path.of(ImageConstants.ENCODED_IMAGE_PATH
-                        .replace(".png", "_metadata.png")));
-
-        for (int i = 0; i < payloadFrameImages.size(); i++) {
-            imageIOCodec.write(payloadFrameImages.get(i),
-                    Path.of(ImageConstants.ENCODED_IMAGE_PATH
-                            .replace(".png", "_payload_" + i + ".png")));
-        }
-
-        return new EncodedData(metadataFrameImage, payloadFrameImages);
+        return new ImageFrameSet(metadataFrameImage, payloadFrameImages);
     }
 }
