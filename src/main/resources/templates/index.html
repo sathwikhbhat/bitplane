@@ -5,9 +5,22 @@
     <title>Bitplane</title>
 </head>
 <body>
-<h1>Welcome to Bitplane!</h1>
+<h1>Bitplane</h1>
 
-<button type="button">Encode file to video</button>
-<button type="button">Decode video to file</button>
+<section>
+    <h2>Encode</h2>
+    <form method="post" action="/api/v1/codec/encode" enctype="multipart/form-data">
+        <input type="file" name="file" required>
+        <button type="submit">Encode file to video</button>
+    </form>
+</section>
+
+<section>
+    <h2>Decode</h2>
+    <form method="post" action="/api/v1/codec/decode" enctype="multipart/form-data">
+        <input type="file" name="video" accept="video/*" required>
+        <button type="submit">Decode video to file</button>
+    </form>
+</section>
 </body>
 </html>
