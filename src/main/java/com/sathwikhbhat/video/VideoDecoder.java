@@ -1,9 +1,9 @@
 package com.sathwikhbhat.video;
 
 import com.sathwikhbhat.codec.ImageFrameSet;
-import com.sathwikhbhat.constants.ImageConstants;
+import com.sathwikhbhat.constants.PathConstants;
 import com.sathwikhbhat.image.io.ImageIOCodec;
-import com.sathwikhbhat.util.FileUtil;
+import com.sathwikhbhat.io.DirectoryUtil;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -14,12 +14,14 @@ import java.util.List;
 
 public class VideoDecoder {
 
-    private final FFmpegExecutor fFmpegExecutor = new FFmpegExecutor();
+    private final FFmpegExecutor ffmpegExecutor = new FFmpegExecutor();
     private final ImageIOCodec imageIOCodec = new ImageIOCodec();
 
     public ImageFrameSet decode(Path videoPath) throws IOException {
-        FileUtil.clearDirectory(ImageConstants.EXTRACTED_FRAME_DIRECTORY);
-        Files.createDirectories(ImageConstants.EXTRACTED_FRAME_DIRECTORY);
+        DirectoryUtil.clear(PathConstants.EXTRACTED_FRAME_DIRECTORY);
+        Files.createDirectories(PathConstants.EXTRACTED_FRAME_DIRECTORY);
+
+        System.out.println("Extracting frames from video: " + videoPath);
 
         ProcessBuilder processBuilder = new ProcessBuilder(
                 "ffmpeg",
@@ -29,22 +31,25 @@ public class VideoDecoder {
                 videoPath.toString(),
                 "-start_number",
                 "0",
-                ImageConstants.EXTRACTED_FRAME_DIRECTORY
-                        .resolve("frame_%06d.png")
+                PathConstants.EXTRACTED_FRAME_DIRECTORY
+                        .resolve(FrameFileName.pattern())
                         .toString());
 
-        fFmpegExecutor.execute(processBuilder);
+        ffmpegExecutor.execute(processBuilder);
 
         List<Path> framePaths;
 
-        try (var paths = Files.list(ImageConstants.EXTRACTED_FRAME_DIRECTORY)) {
+        try (var paths = Files.list(PathConstants.EXTRACTED_FRAME_DIRECTORY)) {
             framePaths = paths
                     .sorted()
                     .toList();
         }
 
-        if (framePaths.isEmpty())
+        if (framePaths.isEmpty()) {
             throw new RuntimeException("No frames extracted from video");
+        }
+
+        System.out.println("Extracted " + framePaths.size() + " image frame(s)");
 
         BufferedImage metadataImage = imageIOCodec.read(framePaths.getFirst());
 

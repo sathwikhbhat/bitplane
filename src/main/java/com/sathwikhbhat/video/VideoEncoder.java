@@ -1,9 +1,9 @@
 package com.sathwikhbhat.video;
 
 import com.sathwikhbhat.codec.ImageFrameSet;
-import com.sathwikhbhat.constants.ImageConstants;
+import com.sathwikhbhat.constants.PathConstants;
 import com.sathwikhbhat.image.io.ImageIOCodec;
-import com.sathwikhbhat.util.FileUtil;
+import com.sathwikhbhat.io.DirectoryUtil;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -20,20 +20,22 @@ public class VideoEncoder {
         BufferedImage metadataFrameImage = imageFrameSet.metadataImage();
         List<BufferedImage> payloadFrameImages = imageFrameSet.payloadImages();
 
-        FileUtil.clearDirectory(ImageConstants.FRAME_DIRECTORY);
-        Files.createDirectories(ImageConstants.FRAME_DIRECTORY);
+        DirectoryUtil.clear(PathConstants.FRAME_DIRECTORY);
+        Files.createDirectories(PathConstants.FRAME_DIRECTORY);
+        Files.createDirectories(PathConstants.OUTPUT_VIDEO.getParent());
+
+        System.out.println("Writing " + (payloadFrameImages.size() + 1) + " image frame(s)");
 
         // Frame 0 = Metadata
         imageIOCodec.write(
                 metadataFrameImage,
-                ImageConstants.FRAME_DIRECTORY.resolve("frame_000000.png"));
+                PathConstants.FRAME_DIRECTORY.resolve(FrameFileName.atIndex(0)));
 
         // Frame 1+ = Payload Frames
         for (int i = 0; i < payloadFrameImages.size(); i++) {
             imageIOCodec.write(
                     payloadFrameImages.get(i),
-                    ImageConstants.FRAME_DIRECTORY.resolve(
-                            String.format("frame_%06d.png", i + 1)));
+                    PathConstants.FRAME_DIRECTORY.resolve(FrameFileName.atIndex(i + 1)));
         }
 
         ProcessBuilder processBuilder = new ProcessBuilder(
@@ -41,18 +43,17 @@ public class VideoEncoder {
                 "-y",
                 "-nostdin",
                 "-framerate", "30",
-                "-i", ImageConstants.FRAME_DIRECTORY.resolve("frame_%06d.png").toString(),
+                "-i", PathConstants.FRAME_DIRECTORY.resolve(FrameFileName.pattern()).toString(),
                 "-c:v", "libx264rgb",
                 "-pix_fmt", "rgb24",
                 "-crf", "0",
                 "-preset", "veryslow",
-                ImageConstants.OUTPUT_VIDEO.toString());
+                PathConstants.OUTPUT_VIDEO.toString());
 
         ffmpegExecutor.execute(processBuilder);
 
-        System.out.println("Video encoding completed successfully. Video saved at: "
-                + ImageConstants.OUTPUT_VIDEO.toAbsolutePath());
+        System.out.println("Encoded video: " + PathConstants.OUTPUT_VIDEO.toAbsolutePath());
 
-        return ImageConstants.OUTPUT_VIDEO;
+        return PathConstants.OUTPUT_VIDEO;
     }
 }

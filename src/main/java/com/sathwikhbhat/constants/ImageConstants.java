@@ -1,7 +1,5 @@
 package com.sathwikhbhat.constants;
 
-import java.nio.file.Path;
-
 public final class ImageConstants {
     private ImageConstants() {
         /* This utility class should not be instantiated */
@@ -13,13 +11,4 @@ public final class ImageConstants {
     public static final int FRAME_BYTE_CAPACITY = WIDTH * HEIGHT;
 
     public static final String FORMAT = "png";
-
-    public static final String INPUT_FILE_NAME = "data/input/sample.txt";
-
-    public static final Path FRAME_DIRECTORY = Path.of("data/temp/frames");
-    public static final Path EXTRACTED_FRAME_DIRECTORY = Path.of("data/temp/extracted");
-
-    public static final Path OUTPUT_VIDEO = Path.of("data/output/output.mp4");
-
-    public static final Path DECODED_DIRECTORY = Path.of("data/decoded");
 }

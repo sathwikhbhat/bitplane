@@ -1,6 +1,6 @@
 package com.sathwikhbhat.codec;
 
-import com.sathwikhbhat.constants.ImageConstants;
+import com.sathwikhbhat.constants.PathConstants;
 import com.sathwikhbhat.image.raster.RasterCodec;
 import com.sathwikhbhat.protocol.codec.MetadataFrameCodec;
 import com.sathwikhbhat.protocol.codec.PayloadFrameCodec;
@@ -27,14 +27,10 @@ public class ImageToFileDecoder {
         BufferedImage metadataFrameImage = imageFrameSet.metadataImage();
         List<BufferedImage> payloadFrameImages = imageFrameSet.payloadImages();
 
-        System.out.println("\nBuffered Images read successfully");
+        System.out.println("Decoding " + payloadFrameImages.size() + " payload frame(s)");
 
         byte[] metadataFrameBytes = rasterCodec.deserialize(metadataFrameImage);
         MetadataFrame metadataFrame = metadataFrameCodec.deserialize(metadataFrameBytes);
-
-        System.out.println(metadataFrame);
-
-        System.out.println("=======================================================");
 
         List<PayloadFrame> payloadFrames = new ArrayList<>();
         for (BufferedImage payloadFrameImage : payloadFrameImages) {
@@ -53,12 +49,10 @@ public class ImageToFileDecoder {
 
         byte[] originalFileBytes = Arrays.copyOf(outputStream.toByteArray(), (int) metadataFrame.fileSize());
 
-        System.out.println("File reconstructed successfully. Size: " + originalFileBytes.length + " bytes");
-
-        Files.createDirectories(ImageConstants.DECODED_DIRECTORY);
-        Path outputPath = ImageConstants.DECODED_DIRECTORY.resolve(metadataFrame.fileName().replace('/', '_'));
+        Files.createDirectories(PathConstants.DECODED_DIRECTORY);
+        Path outputPath = PathConstants.DECODED_DIRECTORY.resolve(metadataFrame.fileName().replace('/', '_'));
         Files.write(outputPath, originalFileBytes);
 
-        System.out.println("File written to disk successfully at: " + outputPath.toAbsolutePath());
+        System.out.println("Decoded file: " + outputPath.toAbsolutePath() + " (" + originalFileBytes.length + " bytes)");
     }
 }

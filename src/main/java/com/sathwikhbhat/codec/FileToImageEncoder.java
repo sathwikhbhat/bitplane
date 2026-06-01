@@ -20,7 +20,7 @@ public class FileToImageEncoder {
     public ImageFrameSet encode(Path inputFile) throws IOException {
         byte[] fileBytes = Files.readAllBytes(inputFile);
 
-        System.out.println("File read successfully. Size: " + fileBytes.length + " bytes");
+        System.out.println("Encoding file: " + inputFile + " (" + fileBytes.length + " bytes)");
 
         if (fileBytes.length == 0) {
             throw new IllegalArgumentException("File is empty");
@@ -32,11 +32,7 @@ public class FileToImageEncoder {
                 fileBytes.length,
                 payloadFrames.size());
 
-        System.out.println("Metadata created: " + metadataFrame);
-
-        System.out.println("=======================================================");
-
-        System.out.println("Initialising Rasterization...");
+        System.out.println("Created " + payloadFrames.size() + " payload frame(s)");
 
         BufferedImage metadataFrameImage = imageGenerator.metadataToImage(metadataFrame);
 
@@ -44,8 +40,7 @@ public class FileToImageEncoder {
                 .map(imageGenerator::payloadToImage)
                 .toList();
 
-        System.out.println("Rasterization completed");
-        System.out.println("Total Payload Frames = " + payloadFrameImages.size());
+        System.out.println("Rasterized metadata and payload frames");
 
         return new ImageFrameSet(metadataFrameImage, payloadFrameImages);
     }
