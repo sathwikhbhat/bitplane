@@ -20,7 +20,7 @@ public class FileToImageEncoder {
     private final ImageGenerator imageGenerator = new ImageGenerator();
     private final ImageIOCodec imageIOCodec = new ImageIOCodec();
 
-    public void encode(Path inputFile) throws IOException {
+    public EncodedData encode(Path inputFile) throws IOException {
         byte[] fileBytes = Files.readAllBytes(inputFile);
 
         System.out.println("File read successfully. Size: " + fileBytes.length + " bytes");
@@ -59,5 +59,7 @@ public class FileToImageEncoder {
                     Path.of(ImageConstants.ENCODED_IMAGE_PATH
                             .replace(".png", "_payload_" + i + ".png")));
         }
+
+        return new EncodedData(metadataFrameImage, payloadFrameImages);
     }
 }
