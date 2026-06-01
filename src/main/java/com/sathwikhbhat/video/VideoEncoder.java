@@ -42,8 +42,8 @@ public class VideoEncoder {
                 "-nostdin",
                 "-framerate", "30",
                 "-i", ImageConstants.FRAME_DIRECTORY.resolve("frame_%06d.png").toString(),
-                "-c:v", "libx264",
-                "-pix_fmt", "yuv444p",
+                "-c:v", "libx264rgb",
+                "-pix_fmt", "rgb24",
                 "-crf", "0",
                 "-preset", "veryslow",
                 ImageConstants.OUTPUT_VIDEO.toString());
