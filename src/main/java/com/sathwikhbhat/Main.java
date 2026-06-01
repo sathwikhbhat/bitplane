@@ -2,6 +2,8 @@ package com.sathwikhbhat;
 
 import com.sathwikhbhat.codec.FileToImageEncoder;
 import com.sathwikhbhat.codec.ImageFrameSet;
+import com.sathwikhbhat.codec.ImageToFileDecoder;
+import com.sathwikhbhat.video.VideoDecoder;
 import com.sathwikhbhat.video.VideoEncoder;
 
 import java.io.IOException;
@@ -23,5 +25,8 @@ public class Main {
         Path inputFile = Paths.get(INPUT_FILE_NAME);
         ImageFrameSet imageFrameSet = new FileToImageEncoder().encode(inputFile);
         Path videoPath = new VideoEncoder().encode(imageFrameSet);
+        ImageFrameSet decodedImageFrameSet = new VideoDecoder().decode(videoPath);
+        new ImageToFileDecoder().decode(decodedImageFrameSet);
+
     }
 }
