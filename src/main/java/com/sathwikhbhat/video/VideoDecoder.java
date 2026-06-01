@@ -18,6 +18,10 @@ public class VideoDecoder {
     private final ImageIOCodec imageIOCodec = new ImageIOCodec();
 
     public ImageFrameSet decode(Path videoPath) throws IOException {
+        if (!Files.exists(videoPath)) {
+            throw new IOException("Video file does not exist: " + videoPath);
+        }
+
         DirectoryUtil.clear(PathConstants.EXTRACTED_FRAME_DIRECTORY);
         Files.createDirectories(PathConstants.EXTRACTED_FRAME_DIRECTORY);
 
@@ -27,6 +31,7 @@ public class VideoDecoder {
                 "ffmpeg",
                 "-y",
                 "-nostdin",
+                "-v", "error",
                 "-i",
                 videoPath.toString(),
                 "-start_number",

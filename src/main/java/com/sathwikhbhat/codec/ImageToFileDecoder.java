@@ -32,6 +32,8 @@ public class ImageToFileDecoder {
         byte[] metadataFrameBytes = rasterCodec.deserialize(metadataFrameImage);
         MetadataFrame metadataFrame = metadataFrameCodec.deserialize(metadataFrameBytes);
 
+        validatePayloadFrameCount(metadataFrame, payloadFrameImages.size());
+
         List<PayloadFrame> payloadFrames = new ArrayList<>();
         for (BufferedImage payloadFrameImage : payloadFrameImages) {
             byte[] payloadFrameBytes = rasterCodec.deserialize(payloadFrameImage);
@@ -40,6 +42,7 @@ public class ImageToFileDecoder {
         }
 
         payloadFrames.sort(Comparator.comparingInt(PayloadFrame::frameIndex));
+        validatePayloadFrameOrder(payloadFrames);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
@@ -54,5 +57,29 @@ public class ImageToFileDecoder {
         Files.write(outputPath, originalFileBytes);
 
         System.out.println("Decoded file: " + outputPath.toAbsolutePath() + " (" + originalFileBytes.length + " bytes)");
+    }
+
+    private void validatePayloadFrameCount(MetadataFrame metadataFrame, int actualFrames) {
+        int expectedFrames = metadataFrame.totalPayloadFrames();
+
+        if (expectedFrames < 0) {
+            throw new IllegalStateException("Invalid payload frame count in metadata: " + expectedFrames);
+        }
+
+        if (actualFrames != expectedFrames) {
+            throw new IllegalStateException(
+                    "Payload frame count mismatch. Expected " + expectedFrames + ", found " + actualFrames);
+        }
+    }
+
+    private void validatePayloadFrameOrder(List<PayloadFrame> payloadFrames) {
+        for (int i = 0; i < payloadFrames.size(); i++) {
+            int frameIndex = payloadFrames.get(i).frameIndex();
+
+            if (frameIndex != i) {
+                throw new IllegalStateException(
+                        "Invalid payload frame sequence. Expected frame " + i + ", found " + frameIndex);
+            }
+        }
     }
 }

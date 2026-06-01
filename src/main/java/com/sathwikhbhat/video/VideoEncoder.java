@@ -42,6 +42,7 @@ public class VideoEncoder {
                 "ffmpeg",
                 "-y",
                 "-nostdin",
+                "-v", "error",
                 "-framerate", "30",
                 "-i", PathConstants.FRAME_DIRECTORY.resolve(FrameFileName.pattern()).toString(),
                 "-c:v", "libx264rgb",
