@@ -1,6 +1,5 @@
 package com.sathwikhbhat.codec;
 
-import com.sathwikhbhat.constants.ImageConstants;
 import com.sathwikhbhat.image.raster.RasterCodec;
 import com.sathwikhbhat.protocol.codec.MetadataFrameCodec;
 import com.sathwikhbhat.protocol.codec.PayloadFrameCodec;
@@ -29,7 +28,7 @@ public class ImageToFileDecoder {
 
         System.out.println("\nBuffered Images read successfully");
 
-        byte[] metadataFrameBytes = rasterCodec.deserialize(metadataFrameImage, ImageConstants.FRAME_BYTE_CAPACITY);
+        byte[] metadataFrameBytes = rasterCodec.deserialize(metadataFrameImage);
         MetadataFrame metadataFrame = metadataFrameCodec.deserialize(metadataFrameBytes);
 
         System.out.println(metadataFrame);
@@ -38,7 +37,7 @@ public class ImageToFileDecoder {
 
         List<PayloadFrame> payloadFrames = new ArrayList<>();
         for (BufferedImage payloadFrameImage : payloadFrameImages) {
-            byte[] payloadFrameBytes = rasterCodec.deserialize(payloadFrameImage, ImageConstants.FRAME_BYTE_CAPACITY);
+            byte[] payloadFrameBytes = rasterCodec.deserialize(payloadFrameImage);
             PayloadFrame payloadFrame = payloadFrameCodec.deserialize(payloadFrameBytes);
             payloadFrames.add(payloadFrame);
         }

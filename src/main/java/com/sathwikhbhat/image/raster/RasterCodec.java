@@ -23,13 +23,13 @@ public class RasterCodec {
         return image;
     }
 
-    public byte[] deserialize(BufferedImage image, int length) {
+    public byte[] deserialize(BufferedImage image) {
         Raster raster = image.getRaster();
-        byte[] data = new byte[length];
+        byte[] data = new byte[image.getWidth() * image.getHeight()];
 
         int index = 0;
-        for (int y = 0; y < image.getHeight() && index < length; y++) {
-            for (int x = 0; x < image.getWidth() && index < length; x++) {
+        for (int y = 0; y < image.getHeight(); y++) {
+            for (int x = 0; x < image.getWidth(); x++) {
                 int value = raster.getSample(x, y, 0);
                 data[index++] = (byte) value;
             }
