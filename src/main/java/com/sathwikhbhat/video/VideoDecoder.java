@@ -3,6 +3,7 @@ package com.sathwikhbhat.video;
 import com.sathwikhbhat.codec.ImageFrameSet;
 import com.sathwikhbhat.constants.ImageConstants;
 import com.sathwikhbhat.image.io.ImageIOCodec;
+import com.sathwikhbhat.util.FileUtil;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -17,6 +18,7 @@ public class VideoDecoder {
     private final ImageIOCodec imageIOCodec = new ImageIOCodec();
 
     public ImageFrameSet decode(Path videoPath) throws IOException {
+        FileUtil.clearDirectory(ImageConstants.EXTRACTED_FRAME_DIRECTORY);
         Files.createDirectories(ImageConstants.EXTRACTED_FRAME_DIRECTORY);
 
         ProcessBuilder processBuilder = new ProcessBuilder(
@@ -44,7 +46,7 @@ public class VideoDecoder {
         if (framePaths.isEmpty())
             throw new RuntimeException("No frames extracted from video");
 
-        BufferedImage metadataImage = imageIOCodec.read(framePaths.get(0));
+        BufferedImage metadataImage = imageIOCodec.read(framePaths.getFirst());
 
         List<BufferedImage> payloadImages = new ArrayList<>();
         for (int i = 1; i < framePaths.size(); i++) {

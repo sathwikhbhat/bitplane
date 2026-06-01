@@ -3,6 +3,7 @@ package com.sathwikhbhat.video;
 import com.sathwikhbhat.codec.ImageFrameSet;
 import com.sathwikhbhat.constants.ImageConstants;
 import com.sathwikhbhat.image.io.ImageIOCodec;
+import com.sathwikhbhat.util.FileUtil;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -19,6 +20,7 @@ public class VideoEncoder {
         BufferedImage metadataFrameImage = imageFrameSet.metadataImage();
         List<BufferedImage> payloadFrameImages = imageFrameSet.payloadImages();
 
+        FileUtil.clearDirectory(ImageConstants.FRAME_DIRECTORY);
         Files.createDirectories(ImageConstants.FRAME_DIRECTORY);
 
         // Frame 0 = Metadata
