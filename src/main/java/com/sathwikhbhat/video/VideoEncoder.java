@@ -35,6 +35,25 @@ public class VideoEncoder {
             );
         }
 
+        ProcessBuilder processBuilder = new ProcessBuilder(
+                "ffmpeg",
+                "-framerate", "30",
+                "-i", ImageConstants.FRAME_DIRECTORY.resolve("frame_%06d.png").toString(),
+                "-c:v", "libx264",
+                "-pix_fmt", "yuv444p",
+                ImageConstants.OUTPUT_VIDEO.toString());
+
+        Process process = processBuilder.start();
+
+        try {
+            int exitCode = process.waitFor();
+            if (exitCode != 0)
+                throw new RuntimeException("FFmpeg encoding failed");
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        }
+
         return ImageConstants.OUTPUT_VIDEO;
     }
 }
