@@ -1,5 +1,6 @@
 package com.sathwikhbhat.codec;
 
+import com.sathwikhbhat.constants.ImageConstants;
 import com.sathwikhbhat.image.raster.RasterCodec;
 import com.sathwikhbhat.protocol.codec.MetadataFrameCodec;
 import com.sathwikhbhat.protocol.codec.PayloadFrameCodec;
@@ -54,8 +55,10 @@ public class ImageToFileDecoder {
 
         System.out.println("File reconstructed successfully. Size: " + originalFileBytes.length + " bytes");
 
-        Files.write(Path.of("data/decoded/" + metadataFrame.fileName()), originalFileBytes);
+        Files.createDirectories(ImageConstants.DECODED_DIRECTORY);
+        Path outputPath = ImageConstants.DECODED_DIRECTORY.resolve(metadataFrame.fileName().replace('/', '_'));
+        Files.write(outputPath, originalFileBytes);
 
-        System.out.println("File written to disk successfully at: " + Path.of("data/decoded/" + metadataFrame.fileName()).toAbsolutePath());
+        System.out.println("File written to disk successfully at: " + outputPath.toAbsolutePath());
     }
 }

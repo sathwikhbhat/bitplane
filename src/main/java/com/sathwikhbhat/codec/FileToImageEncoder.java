@@ -1,8 +1,6 @@
 package com.sathwikhbhat.codec;
 
-import com.sathwikhbhat.constants.ImageConstants;
 import com.sathwikhbhat.image.generator.ImageGenerator;
-import com.sathwikhbhat.image.io.ImageIOCodec;
 import com.sathwikhbhat.protocol.builder.PayloadFrameBuilder;
 import com.sathwikhbhat.protocol.frame.MetadataFrame;
 import com.sathwikhbhat.protocol.frame.PayloadFrame;
@@ -18,7 +16,6 @@ public class FileToImageEncoder {
 
     private final PayloadFrameBuilder payloadFrameBuilder = new PayloadFrameBuilder();
     private final ImageGenerator imageGenerator = new ImageGenerator();
-    private final ImageIOCodec imageIOCodec = new ImageIOCodec();
 
     public ImageFrameSet encode(Path inputFile) throws IOException {
         byte[] fileBytes = Files.readAllBytes(inputFile);

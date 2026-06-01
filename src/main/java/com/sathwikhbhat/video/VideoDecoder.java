@@ -25,15 +25,13 @@ public class VideoDecoder {
                 "-nostdin",
                 "-i",
                 videoPath.toString(),
+                "-start_number",
+                "0",
                 ImageConstants.EXTRACTED_FRAME_DIRECTORY
                         .resolve("frame_%06d.png")
                         .toString());
 
         fFmpegExecutor.execute(processBuilder);
-
-        BufferedImage metadataImage = imageIOCodec.read(
-                ImageConstants.EXTRACTED_FRAME_DIRECTORY
-                        .resolve("frame_000000.png"));
 
         List<Path> framePaths;
 
@@ -43,14 +41,17 @@ public class VideoDecoder {
                     .toList();
         }
 
+        if (framePaths.isEmpty())
+            throw new RuntimeException("No frames extracted from video");
+
+        BufferedImage metadataImage = imageIOCodec.read(framePaths.get(0));
+
         List<BufferedImage> payloadImages = new ArrayList<>();
         for (int i = 1; i < framePaths.size(); i++) {
             payloadImages.add(imageIOCodec.read(framePaths.get(i)));
         }
 
-        return new ImageFrameSet(
-                metadataImage,
-                payloadImages);
+        return new ImageFrameSet(metadataImage, payloadImages);
     }
 
 }

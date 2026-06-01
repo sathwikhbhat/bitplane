@@ -15,10 +15,11 @@ public final class ImageConstants {
     public static final String FORMAT = "png";
 
     public static final String INPUT_FILE_NAME = "data/input/sample.txt";
-    public static final String ENCODED_IMAGE_PATH = "data/encoded/encoded.png";
 
     public static final Path FRAME_DIRECTORY = Path.of("data/temp/frames");
     public static final Path EXTRACTED_FRAME_DIRECTORY = Path.of("data/temp/extracted");
 
     public static final Path OUTPUT_VIDEO = Path.of("data/output/output.mp4");
+
+    public static final Path DECODED_DIRECTORY = Path.of("data/decoded");
 }

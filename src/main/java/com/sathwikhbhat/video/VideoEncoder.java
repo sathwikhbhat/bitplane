@@ -42,6 +42,8 @@ public class VideoEncoder {
                 "-i", ImageConstants.FRAME_DIRECTORY.resolve("frame_%06d.png").toString(),
                 "-c:v", "libx264",
                 "-pix_fmt", "yuv444p",
+                "-crf", "0",
+                "-preset", "veryslow",
                 ImageConstants.OUTPUT_VIDEO.toString());
 
         ffmpegExecutor.execute(processBuilder);
