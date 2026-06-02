@@ -1,273 +1,180 @@
-# Current Architecture Design - Building the Frame
+# Architecture
 
-## Core Idea
+## Overview
 
-The system converts a file into multiple fixed-size grayscale image frames.
+Bitplane converts files into fixed-size grayscale image frames at 1920×1080, one byte per pixel. The implementation is centered around four parts: the frame builder, the decoder, the video builder, and the workspace cleanup service. This document explains how those pieces are built and how they fit together.
 
-Each frame is:
+## Frame Builder
 
-```text
-1920 × 1080 grayscale
-```
+### What it does
 
-which gives:
+The frame builder turns a file into one metadata frame and a sequence of payload frames.
 
-```text
-2,073,600 bytes capacity per frame
-```
+### Main classes
 
-because:
+| Component | Class | Responsibility |
+| --- | --- | --- |
+| File encoding | `FileToImageEncoder` | Reads the input file, creates metadata and payload frames, and converts them to images |
+| Payload chunking | `PayloadFrameBuilder` | Splits file bytes into fixed-size payload chunks |
+| Metadata model | `MetadataFrame` | Stores file name, file size, and total payload frame count |
+| Payload model | `PayloadFrame` | Stores frame index and payload bytes |
+| Frame serialization | `MetadataFrameCodec`, `PayloadFrameCodec` | Converts frame objects to and from byte arrays |
+| Image conversion | `ImageGenerator`, `RasterCodec` | Converts serialized frame bytes to grayscale `BufferedImage` objects |
 
-```text
-1 pixel = 1 byte
-```
+### Frame layout
 
-## Pipeline
+| Frame | Layout |
+| --- | --- |
+| Metadata frame | 4-byte length prefix, then JSON metadata bytes |
+| Payload frame | 4-byte frame index, then payload bytes |
 
-```text
-File
-↓
-Metadata + Payload Separation
-↓
-Frame Serialization
-↓
-Image Encoding
-↓
-Video Generation
-```
+The total frame capacity is `Constants.FRAME_BYTE_CAPACITY`, which is `Constants.WIDTH × Constants.HEIGHT`.
 
-## Architectural Principle
+### How it is built
 
-The system separates:
+1. `FileToImageEncoder.encode(Path inputFile)` reads the file bytes.
+2. `PayloadFrameBuilder.build(byte[] payload)` splits the payload into chunks of `FRAME_BYTE_CAPACITY - Integer.BYTES`.
+3. The encoder creates a `MetadataFrame` using the original file name, total file size, and payload frame count.
+4. `MetadataFrameCodec` serializes the metadata frame as JSON with a length prefix.
+5. `PayloadFrameCodec` serializes each payload frame with a 4-byte frame index prefix.
+6. `RasterCodec` writes the serialized bytes into a grayscale `BufferedImage`.
+7. `ImageGenerator` returns an `ImageFrameSet` containing the metadata image and the payload images.
 
-```text
-metadata transport
-```
+### Important behavior
 
-from:
+| Topic | Behavior |
+| --- | --- |
+| Chunk size | `FRAME_BYTE_CAPACITY - 4` bytes per payload frame |
+| Frame ordering | Deterministic, starting at frame index 0 |
+| Memory model | The current encoder reads the full input into memory |
+| Error handling | Invalid input and serialization failures are propagated as exceptions |
 
-```text
-payload transport
-```
+### Example
 
-This removes:
+For a 5 MiB file:
 
-* recursive sizing problems
-* dynamic payload calculations
-* unstable frame layouts
-* packet dependency loops
+- Frame capacity: `1920 × 1080 = 2,073,600` bytes
+- Payload per frame: `2,073,600 - 4 = 2,073,596` bytes
+- Payload frames required: `ceil(5,242,880 / 2,073,596) = 3`
 
-## Frame Types
+### Notes
 
-### Frame 0
+- Metadata must fit in a single frame.
+- The current implementation does not stream file reads.
+- When writing frames to disk, temporary files and atomic rename are preferred to avoid partial output.
 
-Metadata Frame
+## Video Builder
 
-Dedicated entirely to protocol metadata.
+### What it does
 
-Contains:
+The video builder takes the generated frame images and assembles them into a video file.
 
-* file name
-* total file size
-* total payload frame count
+### Main classes
 
-No payload data is stored here.
+| Component | Class | Responsibility |
+| --- | --- | --- |
+| Video assembly | `VideoEncoder` | Writes frame images to disk and invokes ffmpeg |
+| Process execution | `FFmpegExecutor` | Starts ffmpeg and checks the exit status |
+| Frame naming | `FrameFileName` | Provides the frame file pattern used by ffmpeg |
+| Image I/O | `ImageIOCodec` | Writes the generated images as PNG files |
 
-### Frame 1+
+### How it is built
 
-Payload Frames
+1. `VideoEncoder.encode(ImageFrameSet imageFrameSet, Path jobDirectory)` creates a `frames` directory inside the job directory.
+2. The metadata image is written as `frame_000000.png`.
+3. The payload images are written in order as `frame_000001.png`, `frame_000002.png`, and so on.
+4. A `ProcessBuilder` is created for ffmpeg using the `frame_%06d.png` input pattern.
+5. `FFmpegExecutor.execute(...)` starts ffmpeg and waits for completion.
+6. If ffmpeg returns a non-zero exit code, the operation fails and the error is surfaced to the caller.
 
-Contain:
+### ffmpeg command used
 
-* frame index
-* payload bytes
-
-These are fixed-layout transport frames.
-
-## Metadata Header
-
-```java
-public record MetadataHeader(
-        String fileName,
-        long fileSize,
-        int totalPayloadFrames
-) {
-}
-```
-
-Purpose:
-
-* reconstruction metadata
-* payload reconstruction termination
-* future protocol extensibility
-
-Stored only in Frame 0.
-
-## Payload Header
-
-```java
-public record PayloadHeader(
-        int frameIndex
-) {
-}
-```
-
-Purpose:
-
-* payload ordering
-* future multithreaded decoding support
-
-Stored in every payload frame.
-
-## Metadata Frame Layout (Frame 0)
-
-```text
-[4 bytes metadataLength]
-[metadataBytes]
-[unused padding]
+```bash
+ffmpeg -y -nostdin -v error -framerate 30 -i frames/frame_%06d.png -c:v libx264rgb -pix_fmt rgb24 -crf 0 -preset veryslow output.mp4
 ```
 
 ### Notes
 
-* `metadataBytes` are serialized using Jackson.
-* Remaining unused bytes in Frame 0 are ignored.
-* Entire metadata must fit within one frame.
-* If metadata exceeds frame capacity:
+| Topic | Behavior |
+| --- | --- |
+| Assembly mode | File-based, not streaming |
+| Codec choice | `libx264rgb` with `-crf 0` to reduce pixel changes |
+| Output | `output.mp4` in the job directory |
+| Trade-off | Simple and debuggable, but heavier on disk I/O |
 
-    * throw encoding exception
+## Decoder
 
-## Payload Frame Layout (Frame 1+)
+### What it does
 
-```text
-[4 bytes frameIndex]
-[payloadBytes]
-```
+The decoder reconstructs the original file from a metadata image and a list of payload images.
+
+### Main classes
+
+| Component | Class | Responsibility |
+| --- | --- | --- |
+| File decoding | `ImageToFileDecoder` | Reconstructs the original file from frame images |
+| Frame deserialization | `MetadataFrameCodec`, `PayloadFrameCodec` | Converts byte arrays back into frame objects |
+| Image conversion | `RasterCodec` | Converts grayscale images back to byte arrays |
+
+### How it is built
+
+1. `ImageToFileDecoder.decode(ImageFrameSet, Path jobDirectory)` reads the metadata image and payload images.
+2. `RasterCodec.deserialize(...)` converts each image back into a byte array.
+3. `MetadataFrameCodec.deserialize(...)` parses the metadata frame.
+4. `PayloadFrameCodec.deserialize(...)` parses each payload frame.
+5. The decoder validates the expected payload frame count.
+6. Payload frames are sorted by `frameIndex`.
+7. The payload bytes are concatenated and truncated to the original file size.
+8. The reconstructed file is written to the job directory.
 
 ### Notes
 
-* `frameIndex` is fixed-width.
-* `frameIndex` uses 4 bytes (`int`).
-* Remaining frame space is pure payload capacity.
-* No payload size is stored per frame.
+| Topic | Behavior |
+| --- | --- |
+| Ordering | Strict, based on `frameIndex` |
+| Validation | Fails if frame count or ordering is invalid |
+| Output | Reconstructed file in the supplied job directory |
 
-## Payload Capacity
+## Isolated Workspace and Cleanup
 
-### Total Frame Capacity
+### What it does
 
-```text
-1920 × 1080
-=
-2,073,600 bytes
-```
+Workspaces keep each operation isolated from the others and make cleanup predictable.
 
-### Payload Frame Capacity
+### Main classes and paths
 
-```text
-2,073,600 - 4
-=
-2,073,596 bytes
-```
+| Component | Class or Path | Responsibility |
+| --- | --- | --- |
+| Workspace root | `Constants.TEMP_DIRECTORY` | Default temp location, currently `data/temp` |
+| Cleanup service | `WorkspaceCleanupService` | Removes stale workspaces on a schedule |
 
-because:
+### How workspaces are used
 
-* first 4 bytes store frame index
+1. The caller creates a unique `jobDirectory`, usually under `data/temp`.
+2. Input, frames, output, and logs can be stored in separate subdirectories inside that workspace.
+3. The encoder and decoder operate inside the same workspace path for the duration of the job.
+4. The video builder writes frame files and output video inside the workspace.
+5. The cleanup service removes old workspaces after they expire.
 
-## Why Payload Size Was Removed
+### Cleanup behavior
 
-Earlier architecture stored:
+| Topic | Behavior |
+| --- | --- |
+| Schedule | Runs every 300000 ms |
+| Age limit | Removes directories older than 10 minutes |
+| Deletion | Uses recursive deletion |
+| Failure handling | Deletion errors are ignored |
 
-```java
-payloadSize
-```
+### Practical notes
 
-inside each payload frame.
+- Workspace names should be unique, typically UUID based.
+- Temporary files should be written atomically where possible.
+- Logs can be kept inside the workspace for debugging until cleanup runs.
 
-This created recursive dependency problems because:
+## End-to-End Flow
 
-* payload size depended on header size
-* header size depended on serialized metadata
-* frame count calculations became unstable
-
-The new architecture removes this completely.
-
-## Reconstruction Logic
-
-### Step 1
-
-Decode Frame 0.
-
-Extract:
-
-* file name
-* file size
-* total payload frames
-
-### Step 2
-
-Decode payload frames.
-
-Use:
-
-```text
-frameIndex
-```
-
-to arrange payload frames correctly.
-
-### Step 3
-
-Reconstruct bytes until:
-
-```text
-reconstructedBytes == fileSize
-```
-
-This removes the need for:
-
-* per-frame payload size
-* special handling for last frame
-
-## Serializer Structure
-
-### MetadataSerializer
-
-Used only for Frame 0.
-
-Responsibility:
-
-```text
-MetadataHeader → byte[]
-```
-
-Uses:
-
-* Jackson serialization
-
-### PayloadSerializer
-
-Used for Frame 1+.
-
-Responsibility:
-
-```text
-PayloadHeader + payload → byte[]
-```
-
-Uses:
-
-* manual binary serialization
-* direct byte array manipulation
-
-No JSON is used for payload frames.
-
-## Important Protocol Constraint
-
-Metadata must fit inside one frame.
-
-If serialized metadata exceeds metadata frame capacity:
-
-```text
-throw encoding exception
-```
-
-This is an intentional protocol simplification.
+1. The caller creates a job directory.
+2. `FileToImageEncoder` turns the input file into metadata and payload images.
+3. `VideoEncoder` can assemble the images into a video.
+4. `ImageToFileDecoder` reconstructs the original file from the images.
+5. `WorkspaceCleanupService` removes stale job directories later.
