@@ -3,17 +3,17 @@ package com.sathwikhbhat.bitplane.controller;
 import com.sathwikhbhat.bitplane.constants.Constants;
 import com.sathwikhbhat.bitplane.service.CodecService;
 import io.github.sathwikhbhat.apiexecutiontracker.annotation.TrackExecutionTime;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -32,40 +32,67 @@ public class CodecController {
     }
 
     @PostMapping("/encode")
-    public ResponseEntity<Resource> encode(@RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<StreamingResponseBody> encode(@RequestParam("file") MultipartFile file) throws IOException {
         String originalFileName = getOriginalFileName(file);
         Path jobDirectory = createJobDirectory();
         Path tempFile = jobDirectory.resolve("input.bin");
+        try {
+            file.transferTo(tempFile);
 
-        file.transferTo(tempFile);
+            Path videoPath = codecService.encode(tempFile, originalFileName, jobDirectory);
 
-        Path videoPath = codecService.encode(tempFile, originalFileName, jobDirectory);
-        Resource resource = new FileSystemResource(videoPath);
+            StreamingResponseBody body = outputStream -> {
+                try (var inputStream = Files.newInputStream(videoPath)) {
+                    inputStream.transferTo(outputStream);
+                } finally {
+                    deleteWorkspace(jobDirectory);
+                }
+            };
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\"output.mp4\"")
-                .contentType(MediaType.valueOf("video/mp4"))
-                .contentLength(Files.size(videoPath))
-                .body(resource);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"output.mp4\"")
+                    .contentType(MediaType.valueOf("video/mp4"))
+                    .contentLength(Files.size(videoPath))
+                    .body(body);
+        } catch (Exception e) {
+            deleteWorkspace(jobDirectory);
+            if (e instanceof IOException ioException) {
+                throw ioException;
+            }
+            throw (RuntimeException) e;
+        }
     }
 
     @PostMapping("/decode")
-    public ResponseEntity<Resource> decode(@RequestParam("video") MultipartFile video) throws IOException {
+    public ResponseEntity<StreamingResponseBody> decode(@RequestParam("video") MultipartFile video) throws IOException {
         Path jobDirectory = createJobDirectory();
         Path tempVideo = jobDirectory.resolve("input.mp4");
+        try {
+            video.transferTo(tempVideo);
 
-        video.transferTo(tempVideo);
+            Path decodedFile = codecService.decode(tempVideo, jobDirectory);
 
-        Path decodedFile = codecService.decode(tempVideo, jobDirectory);
-        Resource resource = new FileSystemResource(decodedFile);
+            StreamingResponseBody body = outputStream -> {
+                try (var inputStream = Files.newInputStream(decodedFile)) {
+                    inputStream.transferTo(outputStream);
+                } finally {
+                    deleteWorkspace(jobDirectory);
+                }
+            };
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\"" + decodedFile.getFileName() + "\"")
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .contentLength(Files.size(decodedFile))
-                .body(resource);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=\"" + decodedFile.getFileName() + "\"")
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .contentLength(Files.size(decodedFile))
+                    .body(body);
+        } catch (Exception e) {
+            deleteWorkspace(jobDirectory);
+            if (e instanceof IOException ioException) {
+                throw ioException;
+            }
+            throw (RuntimeException) e;
+        }
     }
 
     private String getOriginalFileName(MultipartFile file) {
@@ -77,5 +104,12 @@ public class CodecController {
         Path jobDirectory = Constants.TEMP_DIRECTORY.resolve(UUID.randomUUID().toString());
         Files.createDirectories(jobDirectory);
         return jobDirectory;
+    }
+
+    private void deleteWorkspace(Path workspace) {
+        try {
+            FileSystemUtils.deleteRecursively(workspace);
+        } catch (IOException ignored) {
+        }
     }
 }
