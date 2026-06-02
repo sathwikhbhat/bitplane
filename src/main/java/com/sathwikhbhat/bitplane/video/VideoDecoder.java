@@ -2,7 +2,6 @@ package com.sathwikhbhat.bitplane.video;
 
 import com.sathwikhbhat.bitplane.codec.ImageFrameSet;
 import com.sathwikhbhat.bitplane.image.io.ImageIOCodec;
-
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -29,14 +28,13 @@ public class VideoDecoder {
                 "ffmpeg",
                 "-y",
                 "-nostdin",
-                "-v", "error",
+                "-v",
+                "error",
                 "-i",
                 videoPath.toString(),
                 "-start_number",
                 "0",
-                extractedFrameDirectory
-                        .resolve(FrameFileName.pattern())
-                        .toString());
+                extractedFrameDirectory.resolve(FrameFileName.pattern()).toString());
 
         try {
             ffmpegExecutor.execute(processBuilder);
@@ -65,5 +63,4 @@ public class VideoDecoder {
 
         return new ImageFrameSet(metadataImage, payloadImages);
     }
-
 }

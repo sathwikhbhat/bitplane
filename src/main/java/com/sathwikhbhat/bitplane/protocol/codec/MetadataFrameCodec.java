@@ -3,7 +3,6 @@ package com.sathwikhbhat.bitplane.protocol.codec;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sathwikhbhat.bitplane.protocol.frame.MetadataFrame;
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
@@ -14,8 +13,7 @@ public class MetadataFrameCodec {
     public byte[] serialize(MetadataFrame metadataFrame) throws JsonProcessingException {
         byte[] metadataBytes = mapper.writeValueAsBytes(metadataFrame);
 
-        return ByteBuffer
-                .allocate(Integer.BYTES + metadataBytes.length)
+        return ByteBuffer.allocate(Integer.BYTES + metadataBytes.length)
                 .putInt(metadataBytes.length)
                 .put(metadataBytes)
                 .array();

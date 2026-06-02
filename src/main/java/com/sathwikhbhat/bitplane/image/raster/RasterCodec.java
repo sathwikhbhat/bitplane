@@ -1,7 +1,6 @@
 package com.sathwikhbhat.bitplane.image.raster;
 
 import com.sathwikhbhat.bitplane.constants.Constants;
-
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;

@@ -1,11 +1,10 @@
 package com.sathwikhbhat.bitplane.image.io;
 
 import com.sathwikhbhat.bitplane.constants.Constants;
-
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
+import javax.imageio.ImageIO;
 
 public class ImageIOCodec {
 

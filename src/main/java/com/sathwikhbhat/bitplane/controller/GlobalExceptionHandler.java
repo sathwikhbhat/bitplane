@@ -22,9 +22,16 @@ public class GlobalExceptionHandler {
         return "exception-error";
     }
 
-    @ExceptionHandler({IllegalArgumentException.class, IllegalStateException.class, JsonProcessingException.class, MultipartException.class})
+    @ExceptionHandler({
+        IllegalArgumentException.class,
+        IllegalStateException.class,
+        JsonProcessingException.class,
+        MultipartException.class
+    })
     public String handleCorruptedFileException(Model model) {
-        model.addAttribute("errorMessage", "The file you submitted appears to be corrupted or invalid. Please check the file and try again.");
+        model.addAttribute(
+                "errorMessage",
+                "The file you submitted appears to be corrupted or invalid. Please check the file and try again.");
         return "exception-error";
     }
 

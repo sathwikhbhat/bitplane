@@ -1,7 +1,6 @@
 package com.sathwikhbhat.bitplane.protocol.codec;
 
 import com.sathwikhbhat.bitplane.protocol.frame.PayloadFrame;
-
 import java.nio.ByteBuffer;
 
 public class PayloadFrameCodec {
@@ -9,8 +8,7 @@ public class PayloadFrameCodec {
     public byte[] serialize(PayloadFrame payloadFrame) {
         byte[] payload = payloadFrame.payload();
 
-        return ByteBuffer
-                .allocate(Integer.BYTES + payload.length)
+        return ByteBuffer.allocate(Integer.BYTES + payload.length)
                 .putInt(payloadFrame.frameIndex())
                 .put(payload)
                 .array();

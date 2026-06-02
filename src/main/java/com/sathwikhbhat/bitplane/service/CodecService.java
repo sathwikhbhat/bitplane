@@ -5,10 +5,9 @@ import com.sathwikhbhat.bitplane.codec.ImageFrameSet;
 import com.sathwikhbhat.bitplane.codec.ImageToFileDecoder;
 import com.sathwikhbhat.bitplane.video.VideoDecoder;
 import com.sathwikhbhat.bitplane.video.VideoEncoder;
-import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.nio.file.Path;
+import org.springframework.stereotype.Service;
 
 @Service
 public class CodecService {

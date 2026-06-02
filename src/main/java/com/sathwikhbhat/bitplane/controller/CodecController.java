@@ -3,6 +3,10 @@ package com.sathwikhbhat.bitplane.controller;
 import com.sathwikhbhat.bitplane.constants.Constants;
 import com.sathwikhbhat.bitplane.service.CodecService;
 import io.github.sathwikhbhat.apiexecutiontracker.annotation.TrackExecutionTime;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.UUID;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,11 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.UUID;
 
 @TrackExecutionTime
 @RestController
@@ -78,7 +77,8 @@ public class CodecController {
             };
 
             return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                    .header(
+                            HttpHeaders.CONTENT_DISPOSITION,
                             "attachment; filename=\"" + decodedFile.getFileName() + "\"")
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
                     .contentLength(Files.size(decodedFile))

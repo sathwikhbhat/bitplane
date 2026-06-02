@@ -8,8 +8,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class BitplaneApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(BitplaneApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(BitplaneApplication.class, args);
+    }
 }

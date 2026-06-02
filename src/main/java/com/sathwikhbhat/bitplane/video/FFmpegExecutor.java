@@ -17,8 +17,7 @@ public class FFmpegExecutor {
         try {
             int exitCode = process.waitFor();
             if (exitCode != 0) {
-                throw new RuntimeException(
-                        "FFmpeg failed with exit code " + exitCode + ": " + command(processBuilder));
+                throw new RuntimeException("FFmpeg failed with exit code " + exitCode + ": " + command(processBuilder));
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

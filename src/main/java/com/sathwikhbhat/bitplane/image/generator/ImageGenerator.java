@@ -6,7 +6,6 @@ import com.sathwikhbhat.bitplane.protocol.codec.MetadataFrameCodec;
 import com.sathwikhbhat.bitplane.protocol.codec.PayloadFrameCodec;
 import com.sathwikhbhat.bitplane.protocol.frame.MetadataFrame;
 import com.sathwikhbhat.bitplane.protocol.frame.PayloadFrame;
-
 import java.awt.image.BufferedImage;
 
 public class ImageGenerator {
@@ -22,5 +21,4 @@ public class ImageGenerator {
     public BufferedImage payloadToImage(PayloadFrame frame) {
         return rasterCodec.serialize(payloadFrameCodec.serialize(frame));
     }
-
 }

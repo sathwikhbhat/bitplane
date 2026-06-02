@@ -5,7 +5,6 @@ import com.sathwikhbhat.bitplane.protocol.codec.MetadataFrameCodec;
 import com.sathwikhbhat.bitplane.protocol.codec.PayloadFrameCodec;
 import com.sathwikhbhat.bitplane.protocol.frame.MetadataFrame;
 import com.sathwikhbhat.bitplane.protocol.frame.PayloadFrame;
-
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -52,10 +51,12 @@ public class ImageToFileDecoder {
         byte[] originalFileBytes = Arrays.copyOf(outputStream.toByteArray(), (int) metadataFrame.fileSize());
 
         Files.createDirectories(jobDirectory);
-        Path outputPath = jobDirectory.resolve(metadataFrame.fileName().replace('/', '_').replace('\\', '_'));
+        Path outputPath =
+                jobDirectory.resolve(metadataFrame.fileName().replace('/', '_').replace('\\', '_'));
         Files.write(outputPath, originalFileBytes);
 
-        System.out.println("Decoded file: " + outputPath.toAbsolutePath() + " (" + originalFileBytes.length + " bytes)");
+        System.out.println(
+                "Decoded file: " + outputPath.toAbsolutePath() + " (" + originalFileBytes.length + " bytes)");
 
         return outputPath;
     }
