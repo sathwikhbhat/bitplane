@@ -8,8 +8,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class VideoDecoder {
+
+    private static final Logger log = LoggerFactory.getLogger(VideoDecoder.class);
 
     private final FFmpegExecutor ffmpegExecutor = new FFmpegExecutor();
     private final ImageIOCodec imageIOCodec = new ImageIOCodec();
@@ -22,7 +26,7 @@ public class VideoDecoder {
         Path extractedFrameDirectory = jobDirectory.resolve("extracted_frames");
         Files.createDirectories(extractedFrameDirectory);
 
-        System.out.println("Extracting frames from video: " + videoPath);
+        log.debug("Extracting frames from video: {}", videoPath);
 
         ProcessBuilder processBuilder = new ProcessBuilder(
                 "ffmpeg",
@@ -52,7 +56,7 @@ public class VideoDecoder {
             throw new IllegalStateException("No frames extracted from video");
         }
 
-        System.out.println("Extracted " + framePaths.size() + " image frame(s)");
+        log.debug("Extracted {} image frame(s)", framePaths.size());
 
         BufferedImage metadataImage = imageIOCodec.read(framePaths.getFirst());
 

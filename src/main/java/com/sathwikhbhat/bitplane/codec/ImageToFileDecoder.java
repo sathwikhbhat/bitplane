@@ -14,8 +14,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ImageToFileDecoder {
+
+    private static final Logger log = LoggerFactory.getLogger(ImageToFileDecoder.class);
 
     private final RasterCodec rasterCodec = new RasterCodec();
     private final MetadataFrameCodec metadataFrameCodec = new MetadataFrameCodec();
@@ -24,8 +28,6 @@ public class ImageToFileDecoder {
     public Path decode(ImageFrameSet imageFrameSet, Path jobDirectory) throws IOException {
         BufferedImage metadataFrameImage = imageFrameSet.metadataImage();
         List<BufferedImage> payloadFrameImages = imageFrameSet.payloadImages();
-
-        System.out.println("Decoding " + payloadFrameImages.size() + " payload frame(s)");
 
         byte[] metadataFrameBytes = rasterCodec.deserialize(metadataFrameImage);
         MetadataFrame metadataFrame = metadataFrameCodec.deserialize(metadataFrameBytes);
@@ -55,8 +57,7 @@ public class ImageToFileDecoder {
                 jobDirectory.resolve(metadataFrame.fileName().replace('/', '_').replace('\\', '_'));
         Files.write(outputPath, originalFileBytes);
 
-        System.out.println(
-                "Decoded file: " + outputPath.toAbsolutePath() + " (" + originalFileBytes.length + " bytes)");
+        log.debug("Decoded file: {} ({} bytes)", outputPath.toAbsolutePath(), originalFileBytes.length);
 
         return outputPath;
     }

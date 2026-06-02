@@ -7,8 +7,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class VideoEncoder {
+
+    private static final Logger log = LoggerFactory.getLogger(VideoEncoder.class);
 
     private final FFmpegExecutor ffmpegExecutor = new FFmpegExecutor();
     private final ImageIOCodec imageIOCodec = new ImageIOCodec();
@@ -21,8 +25,6 @@ public class VideoEncoder {
         Path outputVideo = jobDirectory.resolve("output.mp4");
 
         Files.createDirectories(frameDirectory);
-
-        System.out.println("Writing " + (payloadFrameImages.size() + 1) + " image frame(s)");
 
         // Frame 0 = Metadata
         imageIOCodec.write(metadataFrameImage, frameDirectory.resolve(FrameFileName.atIndex(0)));
@@ -54,7 +56,7 @@ public class VideoEncoder {
 
         ffmpegExecutor.execute(processBuilder);
 
-        System.out.println("Encoded video: " + outputVideo.toAbsolutePath());
+        log.debug("Encoded video: {}", outputVideo.toAbsolutePath());
 
         return outputVideo;
     }
