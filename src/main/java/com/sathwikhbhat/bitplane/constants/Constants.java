@@ -1,7 +1,9 @@
 package com.sathwikhbhat.bitplane.constants;
 
-public final class ImageConstants {
-    private ImageConstants() {
+import java.nio.file.Path;
+
+public final class Constants {
+    private Constants() {
         /* This utility class should not be instantiated */
     }
 
@@ -11,4 +13,6 @@ public final class ImageConstants {
     public static final int FRAME_BYTE_CAPACITY = WIDTH * HEIGHT;
 
     public static final String FORMAT = "png";
+
+    public static final Path TEMP_DIRECTORY = Path.of("data/temp");
 }

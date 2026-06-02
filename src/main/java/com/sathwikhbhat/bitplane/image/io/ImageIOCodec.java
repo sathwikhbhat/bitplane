@@ -1,6 +1,6 @@
 package com.sathwikhbhat.bitplane.image.io;
 
-import com.sathwikhbhat.bitplane.constants.ImageConstants;
+import com.sathwikhbhat.bitplane.constants.Constants;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -10,7 +10,7 @@ import java.nio.file.Path;
 public class ImageIOCodec {
 
     public void write(BufferedImage image, Path outputPath) throws IOException {
-        ImageIO.write(image, ImageConstants.FORMAT, outputPath.toFile());
+        ImageIO.write(image, Constants.FORMAT, outputPath.toFile());
     }
 
     public BufferedImage read(Path imagePath) throws IOException {
