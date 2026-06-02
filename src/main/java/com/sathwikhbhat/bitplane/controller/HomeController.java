@@ -10,9 +10,4 @@ public class HomeController {
     public String index() {
         return "index";
     }
-
-    @GetMapping("/exception-error-page")
-    public String exceptionErrorPage() {
-        return "exception-error";
-    }
 }

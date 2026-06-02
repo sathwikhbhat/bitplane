@@ -38,7 +38,11 @@ public class VideoDecoder {
                         .resolve(FrameFileName.pattern())
                         .toString());
 
-        ffmpegExecutor.execute(processBuilder);
+        try {
+            ffmpegExecutor.execute(processBuilder);
+        } catch (RuntimeException e) {
+            throw new IllegalStateException("The uploaded file could not be read as a video", e);
+        }
 
         List<Path> framePaths;
 
@@ -47,7 +51,7 @@ public class VideoDecoder {
         }
 
         if (framePaths.isEmpty()) {
-            throw new RuntimeException("No frames extracted from video");
+            throw new IllegalStateException("No frames extracted from video");
         }
 
         System.out.println("Extracted " + framePaths.size() + " image frame(s)");

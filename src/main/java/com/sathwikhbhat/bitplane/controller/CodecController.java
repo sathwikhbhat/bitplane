@@ -54,12 +54,9 @@ public class CodecController {
                     .contentType(MediaType.valueOf("video/mp4"))
                     .contentLength(Files.size(videoPath))
                     .body(body);
-        } catch (Exception e) {
+        } catch (IOException | RuntimeException e) {
             deleteWorkspace(jobDirectory);
-            if (e instanceof IOException ioException) {
-                throw ioException;
-            }
-            throw (RuntimeException) e;
+            throw e;
         }
     }
 
@@ -86,12 +83,9 @@ public class CodecController {
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
                     .contentLength(Files.size(decodedFile))
                     .body(body);
-        } catch (Exception e) {
+        } catch (IOException | RuntimeException e) {
             deleteWorkspace(jobDirectory);
-            if (e instanceof IOException ioException) {
-                throw ioException;
-            }
-            throw (RuntimeException) e;
+            throw e;
         }
     }
 
