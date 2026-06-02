@@ -15,4 +15,6 @@ public final class Constants {
     public static final String FORMAT = "png";
 
     public static final Path TEMP_DIRECTORY = Path.of("data/temp");
+
+    public static final long MAX_AGE_MILLIS = 10L * 60L * 1000L;
 }

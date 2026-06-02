@@ -17,10 +17,6 @@ public class FileToImageEncoder {
     private final PayloadFrameBuilder payloadFrameBuilder = new PayloadFrameBuilder();
     private final ImageGenerator imageGenerator = new ImageGenerator();
 
-    public ImageFrameSet encode(Path inputFile) throws IOException {
-        return encode(inputFile, inputFile.getFileName().toString());
-    }
-
     public ImageFrameSet encode(Path inputFile, String originalFileName) throws IOException {
         byte[] fileBytes = Files.readAllBytes(inputFile);
 

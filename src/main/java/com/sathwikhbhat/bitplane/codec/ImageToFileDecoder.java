@@ -1,6 +1,5 @@
 package com.sathwikhbhat.bitplane.codec;
 
-import com.sathwikhbhat.bitplane.constants.PathConstants;
 import com.sathwikhbhat.bitplane.image.raster.RasterCodec;
 import com.sathwikhbhat.bitplane.protocol.codec.MetadataFrameCodec;
 import com.sathwikhbhat.bitplane.protocol.codec.PayloadFrameCodec;
@@ -23,7 +22,7 @@ public class ImageToFileDecoder {
     private final MetadataFrameCodec metadataFrameCodec = new MetadataFrameCodec();
     private final PayloadFrameCodec payloadFrameCodec = new PayloadFrameCodec();
 
-    public Path decode(ImageFrameSet imageFrameSet) throws IOException {
+    public Path decode(ImageFrameSet imageFrameSet, Path jobDirectory) throws IOException {
         BufferedImage metadataFrameImage = imageFrameSet.metadataImage();
         List<BufferedImage> payloadFrameImages = imageFrameSet.payloadImages();
 
@@ -52,8 +51,8 @@ public class ImageToFileDecoder {
 
         byte[] originalFileBytes = Arrays.copyOf(outputStream.toByteArray(), (int) metadataFrame.fileSize());
 
-        Files.createDirectories(PathConstants.DECODED_DIRECTORY);
-        Path outputPath = PathConstants.DECODED_DIRECTORY.resolve(metadataFrame.fileName().replace('/', '_').replace('\\', '_'));
+        Files.createDirectories(jobDirectory);
+        Path outputPath = jobDirectory.resolve(metadataFrame.fileName().replace('/', '_').replace('\\', '_'));
         Files.write(outputPath, originalFileBytes);
 
         System.out.println("Decoded file: " + outputPath.toAbsolutePath() + " (" + originalFileBytes.length + " bytes)");

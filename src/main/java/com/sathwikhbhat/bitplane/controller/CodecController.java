@@ -1,5 +1,6 @@
 package com.sathwikhbhat.bitplane.controller;
 
+import com.sathwikhbhat.bitplane.constants.Constants;
 import com.sathwikhbhat.bitplane.service.CodecService;
 import io.github.sathwikhbhat.apiexecutiontracker.annotation.TrackExecutionTime;
 import org.springframework.core.io.FileSystemResource;
@@ -17,7 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.InvalidPathException;
+import java.util.UUID;
 
 @TrackExecutionTime
 @RestController
@@ -33,12 +34,12 @@ public class CodecController {
     @PostMapping("/encode")
     public ResponseEntity<Resource> encode(@RequestParam("file") MultipartFile file) throws IOException {
         String originalFileName = getOriginalFileName(file);
-        Path tempFile = Files.createTempFile("upload", originalFileName);
-        tempFile.toFile().deleteOnExit();
+        Path jobDirectory = createJobDirectory();
+        Path tempFile = jobDirectory.resolve("input.bin");
 
         file.transferTo(tempFile);
 
-        Path videoPath = codecService.encode(tempFile, originalFileName);
+        Path videoPath = codecService.encode(tempFile, originalFileName, jobDirectory);
         Resource resource = new FileSystemResource(videoPath);
 
         return ResponseEntity.ok()
@@ -51,12 +52,12 @@ public class CodecController {
 
     @PostMapping("/decode")
     public ResponseEntity<Resource> decode(@RequestParam("video") MultipartFile video) throws IOException {
-        Path tempVideo = Files.createTempFile("video", ".mp4");
-        tempVideo.toFile().deleteOnExit();
+        Path jobDirectory = createJobDirectory();
+        Path tempVideo = jobDirectory.resolve("input.mp4");
 
         video.transferTo(tempVideo);
 
-        Path decodedFile = codecService.decode(tempVideo);
+        Path decodedFile = codecService.decode(tempVideo, jobDirectory);
         Resource resource = new FileSystemResource(decodedFile);
 
         return ResponseEntity.ok()
@@ -69,20 +70,12 @@ public class CodecController {
 
     private String getOriginalFileName(MultipartFile file) {
         String originalFileName = file.getOriginalFilename();
+        return StringUtils.hasText(originalFileName) ? originalFileName : "uploaded-file";
+    }
 
-        if (!StringUtils.hasText(originalFileName)) {
-            return "uploaded-file";
-        }
-
-        try {
-            Path fileName = Path.of(originalFileName.replace('\\', '/')).getFileName();
-
-            if (fileName != null && StringUtils.hasText(fileName.toString())) {
-                return fileName.toString();
-            }
-        } catch (InvalidPathException ignored) {
-        }
-
-        return "uploaded-file";
+    private Path createJobDirectory() throws IOException {
+        Path jobDirectory = Constants.TEMP_DIRECTORY.resolve(UUID.randomUUID().toString());
+        Files.createDirectories(jobDirectory);
+        return jobDirectory;
     }
 }
