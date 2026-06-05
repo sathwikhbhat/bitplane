@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
@@ -40,6 +41,11 @@ public class GlobalExceptionHandler {
                 "errorMessage",
                 "The file you submitted appears to be corrupted or invalid. Please check the file and try again.");
         return "exception-error";
+    }
+
+    @ExceptionHandler(AsyncRequestNotUsableException.class)
+    public void handleAsyncRequestNotUsableException(AsyncRequestNotUsableException e) {
+        log.error("Client disconnected: {}", e.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
