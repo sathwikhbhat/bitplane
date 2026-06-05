@@ -1,10 +1,10 @@
-package com.sathwikhbhat.bitplane.codec;
+package com.sathwikhbhat.bitplane.pipeline;
 
-import com.sathwikhbhat.bitplane.image.raster.RasterCodec;
-import com.sathwikhbhat.bitplane.protocol.codec.MetadataFrameCodec;
-import com.sathwikhbhat.bitplane.protocol.codec.PayloadFrameCodec;
-import com.sathwikhbhat.bitplane.protocol.frame.MetadataFrame;
-import com.sathwikhbhat.bitplane.protocol.frame.PayloadFrame;
+import com.sathwikhbhat.bitplane.frame.codec.MetadataFrameCodec;
+import com.sathwikhbhat.bitplane.frame.codec.PayloadFrameCodec;
+import com.sathwikhbhat.bitplane.frame.model.MetadataFrame;
+import com.sathwikhbhat.bitplane.frame.model.PayloadFrame;
+import com.sathwikhbhat.bitplane.image.RasterCodec;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -17,9 +17,9 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ImageToFileDecoder {
+public class DecodePipeline {
 
-    private static final Logger log = LoggerFactory.getLogger(ImageToFileDecoder.class);
+    private static final Logger log = LoggerFactory.getLogger(DecodePipeline.class);
 
     private final RasterCodec rasterCodec = new RasterCodec();
     private final MetadataFrameCodec metadataFrameCodec = new MetadataFrameCodec();

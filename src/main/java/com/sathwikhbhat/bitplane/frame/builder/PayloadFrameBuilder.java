@@ -1,7 +1,7 @@
-package com.sathwikhbhat.bitplane.protocol.builder;
+package com.sathwikhbhat.bitplane.frame.builder;
 
 import com.sathwikhbhat.bitplane.constants.Constants;
-import com.sathwikhbhat.bitplane.protocol.frame.PayloadFrame;
+import com.sathwikhbhat.bitplane.frame.model.PayloadFrame;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

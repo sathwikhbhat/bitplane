@@ -1,8 +1,8 @@
-package com.sathwikhbhat.bitplane.protocol.codec;
+package com.sathwikhbhat.bitplane.frame.codec;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sathwikhbhat.bitplane.protocol.frame.MetadataFrame;
+import com.sathwikhbhat.bitplane.frame.model.MetadataFrame;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 

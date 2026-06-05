@@ -1,4 +1,4 @@
-package com.sathwikhbhat.bitplane.image.raster;
+package com.sathwikhbhat.bitplane.image;
 
 import com.sathwikhbhat.bitplane.constants.Constants;
 import java.awt.image.BufferedImage;

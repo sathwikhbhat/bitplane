@@ -1,4 +1,4 @@
-package com.sathwikhbhat.bitplane.codec;
+package com.sathwikhbhat.bitplane.pipeline;
 
 import java.awt.image.BufferedImage;
 import java.util.List;

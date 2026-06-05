@@ -1,6 +1,6 @@
-package com.sathwikhbhat.bitplane.protocol.codec;
+package com.sathwikhbhat.bitplane.frame.codec;
 
-import com.sathwikhbhat.bitplane.protocol.frame.PayloadFrame;
+import com.sathwikhbhat.bitplane.frame.model.PayloadFrame;
 import java.nio.ByteBuffer;
 
 public class PayloadFrameCodec {

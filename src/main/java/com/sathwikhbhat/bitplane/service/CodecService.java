@@ -1,8 +1,8 @@
 package com.sathwikhbhat.bitplane.service;
 
-import com.sathwikhbhat.bitplane.codec.FileToImageEncoder;
-import com.sathwikhbhat.bitplane.codec.ImageFrameSet;
-import com.sathwikhbhat.bitplane.codec.ImageToFileDecoder;
+import com.sathwikhbhat.bitplane.pipeline.DecodePipeline;
+import com.sathwikhbhat.bitplane.pipeline.EncodePipeline;
+import com.sathwikhbhat.bitplane.pipeline.ImageFrameSet;
 import com.sathwikhbhat.bitplane.video.VideoDecoder;
 import com.sathwikhbhat.bitplane.video.VideoEncoder;
 import java.io.IOException;
@@ -15,11 +15,11 @@ public class CodecService {
     public Path decode(Path videoPath, Path jobDirectory) throws IOException {
         ImageFrameSet imageFrameSet = new VideoDecoder().decode(videoPath, jobDirectory);
 
-        return new ImageToFileDecoder().decode(imageFrameSet, jobDirectory);
+        return new DecodePipeline().decode(imageFrameSet, jobDirectory);
     }
 
     public Path encode(Path inputFile, String originalFileName, Path jobDirectory) throws IOException {
-        ImageFrameSet imageFrameSet = new FileToImageEncoder().encode(inputFile, originalFileName);
+        ImageFrameSet imageFrameSet = new EncodePipeline().encode(inputFile, originalFileName);
 
         return new VideoEncoder().encode(imageFrameSet, jobDirectory);
     }

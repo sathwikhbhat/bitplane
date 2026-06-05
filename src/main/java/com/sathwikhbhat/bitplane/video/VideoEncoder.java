@@ -1,7 +1,7 @@
 package com.sathwikhbhat.bitplane.video;
 
-import com.sathwikhbhat.bitplane.codec.ImageFrameSet;
-import com.sathwikhbhat.bitplane.image.io.ImageIOCodec;
+import com.sathwikhbhat.bitplane.image.ImageIOCodec;
+import com.sathwikhbhat.bitplane.pipeline.ImageFrameSet;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;

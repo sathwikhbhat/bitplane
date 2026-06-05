@@ -1,9 +1,9 @@
-package com.sathwikhbhat.bitplane.codec;
+package com.sathwikhbhat.bitplane.pipeline;
 
-import com.sathwikhbhat.bitplane.image.generator.ImageGenerator;
-import com.sathwikhbhat.bitplane.protocol.builder.PayloadFrameBuilder;
-import com.sathwikhbhat.bitplane.protocol.frame.MetadataFrame;
-import com.sathwikhbhat.bitplane.protocol.frame.PayloadFrame;
+import com.sathwikhbhat.bitplane.frame.builder.PayloadFrameBuilder;
+import com.sathwikhbhat.bitplane.frame.model.MetadataFrame;
+import com.sathwikhbhat.bitplane.frame.model.PayloadFrame;
+import com.sathwikhbhat.bitplane.image.ImageGenerator;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,9 +12,9 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FileToImageEncoder {
+public class EncodePipeline {
 
-    private static final Logger log = LoggerFactory.getLogger(FileToImageEncoder.class);
+    private static final Logger log = LoggerFactory.getLogger(EncodePipeline.class);
 
     private final PayloadFrameBuilder payloadFrameBuilder = new PayloadFrameBuilder();
     private final ImageGenerator imageGenerator = new ImageGenerator();

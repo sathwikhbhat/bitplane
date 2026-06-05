@@ -1,11 +1,10 @@
-package com.sathwikhbhat.bitplane.image.generator;
+package com.sathwikhbhat.bitplane.image;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.sathwikhbhat.bitplane.image.raster.RasterCodec;
-import com.sathwikhbhat.bitplane.protocol.codec.MetadataFrameCodec;
-import com.sathwikhbhat.bitplane.protocol.codec.PayloadFrameCodec;
-import com.sathwikhbhat.bitplane.protocol.frame.MetadataFrame;
-import com.sathwikhbhat.bitplane.protocol.frame.PayloadFrame;
+import com.sathwikhbhat.bitplane.frame.codec.MetadataFrameCodec;
+import com.sathwikhbhat.bitplane.frame.codec.PayloadFrameCodec;
+import com.sathwikhbhat.bitplane.frame.model.MetadataFrame;
+import com.sathwikhbhat.bitplane.frame.model.PayloadFrame;
 import java.awt.image.BufferedImage;
 
 public class ImageGenerator {
