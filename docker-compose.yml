@@ -1,0 +1,11 @@
+services:
+  bitplane:
+    build: .
+    container_name: Bitplane
+    ports:
+      - "8080:8080"
+    volumes:
+      - bitplane-temp:/app/data/temp
+
+volumes:
+  bitplane-temp:
