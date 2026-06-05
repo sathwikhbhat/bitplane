@@ -9,6 +9,8 @@ public final class Constants {
     public static final String FORMAT = "png";
     public static final Path TEMP_DIRECTORY = Path.of("data/temp");
     public static final long MAX_AGE_MILLIS = 10L * 60L * 1000L;
+    public static final long ENCODE_SIZE_LIMIT = 100L * 1024 * 1024;
+    public static final long DECODE_SIZE_LIMIT = 300L * 1024 * 1024;
 
     private Constants() {
         /* This utility class should not be instantiated */

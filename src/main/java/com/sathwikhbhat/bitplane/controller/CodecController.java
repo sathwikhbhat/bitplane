@@ -1,6 +1,7 @@
 package com.sathwikhbhat.bitplane.controller;
 
 import com.sathwikhbhat.bitplane.constants.Constants;
+import com.sathwikhbhat.bitplane.exception.FileSizeLimitExceededException;
 import com.sathwikhbhat.bitplane.service.CodecService;
 import io.github.sathwikhbhat.apiexecutiontracker.annotation.TrackExecutionTime;
 import java.io.IOException;
@@ -32,6 +33,10 @@ public class CodecController {
 
     @PostMapping("/encode")
     public ResponseEntity<StreamingResponseBody> encode(@RequestParam("file") MultipartFile file) throws IOException {
+        if (file.getSize() > Constants.ENCODE_SIZE_LIMIT) {
+            throw new FileSizeLimitExceededException("encode");
+        }
+
         String originalFileName = getOriginalFileName(file);
         Path jobDirectory = createJobDirectory();
         Path tempFile = jobDirectory.resolve("input.bin");
@@ -61,6 +66,10 @@ public class CodecController {
 
     @PostMapping("/decode")
     public ResponseEntity<StreamingResponseBody> decode(@RequestParam("video") MultipartFile video) throws IOException {
+        if (video.getSize() > Constants.DECODE_SIZE_LIMIT) {
+            throw new FileSizeLimitExceededException("decode");
+        }
+
         Path jobDirectory = createJobDirectory();
         Path tempVideo = jobDirectory.resolve("input.mp4");
         try {
