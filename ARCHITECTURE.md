@@ -100,13 +100,13 @@ For a 5 MiB file:
 4. The first path is read as the metadata image; the rest are read as payload images.
 5. An `ImageFrameSet` is returned with all images loaded into memory.
 
-### FFmpeg command — encoding
+### FFmpeg command: encoding
 
 ```bash
 ffmpeg -y -nostdin -v error -framerate 30 -i frames/frame_%06d.png -c:v libx264rgb -pix_fmt rgb24 -crf 0 -preset veryslow output.mp4
 ```
 
-### FFmpeg command — decoding
+### FFmpeg command: decoding
 
 ```bash
 ffmpeg -y -nostdin -v error -i input.mp4 -start_number 0 extracted_frames/frame_%06d.png
@@ -144,7 +144,7 @@ payload images.
 4. `PayloadFrameCodec.deserialize` parses each payload frame.
 5. The decoder validates that the actual payload frame count matches the expected count from the metadata.
 6. Payload frames are sorted by `frameIndex`.
-7. Frame order is validated — each `frameIndex` must match its position in the sorted list.
+7. Frame order is validated: each `frameIndex` must match its position in the sorted list.
 8. The payload bytes are concatenated and truncated to the exact original file size using `Arrays.copyOf`.
 9. The reconstructed file is written to the job directory using its original file name.
 
