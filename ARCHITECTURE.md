@@ -114,11 +114,12 @@ ffmpeg -y -nostdin -v error -i input.mp4 -start_number 0 extracted_frames/frame_
 
 ### Notes
 
-| Topic         | Behavior                                           |
-|---------------|----------------------------------------------------|
-| Codec choice  | `libx264rgb` with `-crf 0` for lossless encoding   |
-| Output        | `output.mp4` in the job directory                  |
-| Memory model  | All frames are loaded into memory during decoding  |
+| Topic         | Behavior                                                                                                              |
+|---------------|-----------------------------------------------------------------------------------------------------------------------|
+| Codec choice  | `libx264rgb` with `-crf 0` for lossless encoding                                                                      |
+| Compatibility | `libx264rgb` is not supported by Windows Media Player or macOS QuickTime; use VLC to play the encoded video          |
+| Output        | `output.mp4` in the job directory                                                                                     |
+| Memory model  | All frames are loaded into memory during decoding                                                                     |
 
 ## Decode Pipeline
 

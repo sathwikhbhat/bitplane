@@ -17,6 +17,8 @@ Inspired by the "YouTube Infinite Storage Glitch", Bitplane deterministically ma
 5. **FFmpeg** assembles all PNGs into a lossless `output.mp4` using `libx264rgb` with `-crf 0 -preset veryslow`.
 6. The video is streamed back to the browser and the workspace is deleted.
 
+> **Compatibility note:** The `libx264rgb` codec is not supported by Windows Media Player or macOS QuickTime. Use [VLC](https://www.videolan.org/vlc/) to play the encoded video.
+
 ### Decoding (Video → File)
 
 1. The uploaded `.mp4` is saved to an isolated workspace.
