@@ -1,6 +1,7 @@
 package com.sathwikhbhat.bitplane.exception;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import javax.imageio.IIOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ui.Model;
@@ -35,10 +36,11 @@ public class GlobalExceptionHandler {
         IllegalArgumentException.class,
         IllegalStateException.class,
         JsonProcessingException.class,
-        MultipartException.class
+        MultipartException.class,
+        IIOException.class
     })
     public String handleCorruptedFileException(Exception e, Model model) {
-        log.error("{}: {}", e.getClass().getSimpleName(), e.getMessage());
+        log.warn("{}: {}", e.getClass().getSimpleName(), e.getMessage());
         model.addAttribute(
                 "errorMessage",
                 "The file you submitted appears to be corrupted or invalid. Please check the file and try again.");
@@ -47,7 +49,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AsyncRequestNotUsableException.class)
     public void handleAsyncRequestNotUsableException(AsyncRequestNotUsableException e) {
-        log.error("Client disconnected: {}", e.getMessage());
+        log.warn("Client disconnected: {}", e.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
