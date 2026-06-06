@@ -84,6 +84,13 @@
     </div>
 </main>
 <script>
+    const ENCODE_LIMIT = 200 * 1024 * 1024;
+    const DECODE_LIMIT = 1024 * 1024 * 1024;
+
+    function redirectToError(operation) {
+        window.location.href = `/error/file-size?operation=${operation}`;
+    }
+
     function bindFileName(inputId, nameId) {
         const input = document.getElementById(inputId);
         const name = document.getElementById(nameId);
@@ -95,6 +102,28 @@
             name.title = file ? file.name : '';
         });
     }
+
+    document.querySelector('form[action="/api/v1/codec/encode"]')
+        .addEventListener('submit', function (event) {
+            const file = document.getElementById('encode-file').files[0];
+
+            if (file && file.size > ENCODE_LIMIT) {
+                event.preventDefault();
+
+                redirectToError('encode');
+            }
+        });
+
+    document.querySelector('form[action="/api/v1/codec/decode"]')
+        .addEventListener('submit', function (event) {
+            const file = document.getElementById('decode-video').files[0];
+
+            if (file && file.size > DECODE_LIMIT) {
+                event.preventDefault();
+
+                redirectToError('decode');
+            }
+        });
 
     bindFileName('encode-file', 'encode-file-name');
     bindFileName('decode-video', 'decode-video-name');

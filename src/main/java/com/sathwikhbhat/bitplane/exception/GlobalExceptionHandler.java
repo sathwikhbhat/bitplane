@@ -23,8 +23,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(FileSizeLimitExceededException.class)
     public String handleFileSizeExceededException(Exception e, Model model) {
         log.warn("{}: {}", e.getClass().getSimpleName(), e.getMessage());
-        String message = "Your file exceeds the free tier limit (encode: 100 MB, decode: 300 MB). "
-                + "Upgrade to Bitplane Pro for ₹10,000/month only, or just split your file. Your call.";
+        String message = """
+                Your file exceeds the free tier limit (encode: 100 MB, decode: 300 MB).
+                Upgrade to Bitplane Pro for ₹10,000/month only, or just split your file. Your call.
+                """;
         model.addAttribute("errorMessage", message);
         return "exception-error";
     }
