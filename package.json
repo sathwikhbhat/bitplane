@@ -1,0 +1,25 @@
+{
+  "name": "bitplane",
+  "version": "1.0.0",
+  "description": "Inspired by the concept behind the “YouTube Infinite Storage Glitch”, Bitplane explores deterministic file encoding through grayscale video frame generation and reconstruction.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sathwikhbhat/bitplane.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/sathwikhbhat/bitplane/issues"
+  },
+  "homepage": "https://github.com/sathwikhbhat/bitplane#readme",
+  "devDependencies": {
+    "prettier": "^3.8.3",
+    "prettier-plugin-tailwindcss": "^0.8.0"
+  }
+}

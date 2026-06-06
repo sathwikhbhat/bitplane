@@ -39,6 +39,9 @@ build/
 ### Project data ###
 /data/
 
+### Node tooling ###
+node_modules/
+
 ### OS ###
 .DS_Store
 Thumbs.db
