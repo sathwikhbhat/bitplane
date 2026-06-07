@@ -7,3 +7,7 @@ spring:
       max-file-size: -1
       max-request-size: -1
       file-size-threshold: 0B
+
+  mvc:
+    async:
+      request-timeout: -1
