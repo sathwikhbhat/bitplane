@@ -6,6 +6,8 @@ Inspired by the "YouTube Infinite Storage Glitch", Bitplane deterministically ma
 
 **Deployed at:** https://bitplane.duckdns.org/
 
+![Bitplane UI](assets/screenshot.png)
+
 ## How It Works
 
 ### Encoding (File → Video)
