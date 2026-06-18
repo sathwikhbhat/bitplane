@@ -4,7 +4,7 @@
 
 Inspired by the "YouTube Infinite Storage Glitch", Bitplane deterministically maps raw file bytes onto 1920×1080 grayscale video frames (one byte per pixel) and reconstructs the original file from those frames with zero data loss.
 
-**Deployed at:** https://bitplane.duckdns.org/
+**Deployed at:** https://bitplane.duckdns.org/ *(currently suspended to reduce cloud costs)*
 
 ![Bitplane UI](assets/screenshot.png)
 
